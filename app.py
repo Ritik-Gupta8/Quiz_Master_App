@@ -16,7 +16,7 @@ def setup_app():
 # Call the function
 setup_app()
 
-app.config["SECRET_KEY"] = os.urandom(24)  # Generates a random secret key
+# app.config["SECRET_KEY"] = os.urandom(24)  # Generates a random secret key
 
 
 from controllers.controllers import *
