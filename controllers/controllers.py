@@ -31,7 +31,7 @@ def signin():
 
 
     return render_template("login.html")
-
+# Registration Route
 @app.route("/register",methods=["GET","POST"])
 def signup():
     if request.method=="POST":
