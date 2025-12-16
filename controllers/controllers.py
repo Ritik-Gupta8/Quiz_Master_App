@@ -76,7 +76,7 @@ def add_subject(name):
 
     return render_template("add_subject.html",name=name)
 
-@app.route("/chapter/<subject_id>/<name>",methods=["POST","GET"])
+#@app.route("/chapter/<subject_id>/<name>",methods=["POST","GET"])
 def add_chapter(name,subject_id):
     if request.method=="POST":
         cname=request.form.get("name")
