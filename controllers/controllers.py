@@ -111,6 +111,7 @@ def delete_subject(id,name):
     db.session.commit()
     return redirect(url_for("admin_dashboard",name=name))
 
+# Chapter edit,get routes for admin
 @app.route("/edit_chapter/<id>/<name>",methods=["GET","POST"])
 def edit_chapter(id,name):
     c=get_chapter(id)
