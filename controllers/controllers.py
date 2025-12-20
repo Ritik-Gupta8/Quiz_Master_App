@@ -134,6 +134,7 @@ def delete_chapter(id,name):
     db.session.commit()
     return redirect(url_for("admin_dashboard",name=name))
 
+# Quiz add,get routes for admin
 @app.route("/quiz_management/<name>")
 def quiz_management(name):
     quizzes = Quiz.query.all()
