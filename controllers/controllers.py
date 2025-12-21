@@ -140,6 +140,8 @@ def quiz_management(name):
     quizzes = Quiz.query.all()
     return render_template("quiz_management.html", name=name, quizzes=quizzes)
    
+# Add quiz route for admin
+
 @app.route("/add_quiz/<name>/<chapter_id>", methods=["POST", "GET"])
 def add_quiz(name, chapter_id):
     if request.method == "POST":
