@@ -160,7 +160,7 @@ def add_quiz(name, chapter_id):
     chapter = Chapter.query.get_or_404(chapter_id)
     return render_template("add_quiz.html", name=name, chapters=chapters, selected_chapter_id=chapter_id, selected_chapter_name=chapter.name)
 
-
+# Edit quiz route for admin
 @app.route("/edit_quiz/<id>/<name>",methods=["GET","POST"])
 def edit_quiz(id, name):
     q=get_quiz(id)
