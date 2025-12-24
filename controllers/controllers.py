@@ -181,6 +181,7 @@ def edit_quiz(id, name):
     chapters = Chapter.query.all()
     return render_template("edit_quiz.html",name=name,quiz=q,chapters=chapters)
 
+# Delete quiz route for admin
 @app.route("/delete_quiz/<id>/<name>", methods=["GET", "POST"])
 def delete_quiz(id, name):  
     q = get_quiz(id)
