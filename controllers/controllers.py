@@ -190,6 +190,7 @@ def delete_quiz(id, name):
         db.session.commit()
     return redirect(url_for("quiz_management", name=name))
 
+# Question add,get routes for admin
 @app.route("/add_question/<quiz_id>/<name>", methods=["POST", "GET"])
 def add_question(quiz_id, name):
     if request.method=="POST":
