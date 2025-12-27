@@ -241,7 +241,7 @@ def delete_question(id,name):
     db.session.commit()
     return redirect(url_for("quiz_management",name=name))
 
-
+# Search route for admin
 @app.route("/search/<name>", methods=["GET", "POST"])
 def search(name):
     if request.method == "POST":
