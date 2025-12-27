@@ -233,7 +233,7 @@ def edit_question(id,name):
         return redirect(url_for("quiz_management",name=name))
     
     return render_template("edit_question.html",question=q,name=name)
-
+# Delete question route for admin
 @app.route("/delete_question/<id>/<name>",methods=["GET","POST"])
 def delete_question(id,name):
     q=get_question(id)
