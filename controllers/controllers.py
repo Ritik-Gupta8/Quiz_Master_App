@@ -259,6 +259,7 @@ def search(name):
             return render_template("quiz_management.html", name=name, quizzes=by_quiz)
     return redirect(url_for("admin_dashboard", name=name))
 
+# Search functions
 def search_by_user(search_txt):
     users = User.query.filter(User.full_name.ilike(f"%{search_txt}%")).all()
     return users
