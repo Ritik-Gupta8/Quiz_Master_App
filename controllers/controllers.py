@@ -302,7 +302,7 @@ def get_admin_summary():
 
 #common route for user          
 @app.route("/user/<uid>/<name>")
-def user_dashboard(uid, name):
+def user_dashboard(uid, name): # user id and name
     user = User.query.get_or_404(uid)
     quizzes = Quiz.query.join(Question).group_by(Quiz.id).all()
     dt_time_now = date.today()
