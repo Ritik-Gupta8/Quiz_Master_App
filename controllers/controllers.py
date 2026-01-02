@@ -280,6 +280,7 @@ def admin_summary(name):
     plot.clf()
     return render_template("admin_summary.html",name=name)
 
+# Admin summary plot function
 def get_admin_summary():
     subjects = Subject.query.all()
     summary = {}
