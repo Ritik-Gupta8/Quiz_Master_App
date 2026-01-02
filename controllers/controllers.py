@@ -272,6 +272,7 @@ def search_by_quiz(search_txt):
     quizzes = Quiz.query.join(Chapter).filter(Chapter.name.ilike(f"%{search_txt}%")).all()
     return quizzes
 
+# Admin summary route
 @app.route("/admin_summary/<name>")
 def admin_summary(name):
     plot = get_admin_summary() 
