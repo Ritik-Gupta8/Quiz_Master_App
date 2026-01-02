@@ -308,7 +308,7 @@ def user_dashboard(uid, name):
     dt_time_now = date.today()
     return render_template("user_dashboard.html", user=user, name=name, quizzes=quizzes, dt_time_now=dt_time_now)
 
-
+# Start quiz route for user
 @app.route("/start_quiz/<qid>/<uid>/<name>")
 def start_quiz(qid, uid, name):
     user = User.query.get_or_404(uid)
