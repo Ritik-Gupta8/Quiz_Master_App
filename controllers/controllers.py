@@ -386,6 +386,7 @@ def user_summary(uid, name):
     plot.clf()
     return render_template("user_summary.html", user=user, name=name)
 
+# User summary plot
 def get_user_summary(user_id):
     subjects = Subject.query.all()
     summary = {}
