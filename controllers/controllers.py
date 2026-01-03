@@ -377,6 +377,7 @@ def search_subject_by_score(search_txt, user_id):
     scores = Score.query.filter_by(user_id=user_id, total_score=score_value).all()
     return scores
 
+# User summary
 @app.route("/user_summary/<uid>/<name>")
 def user_summary(uid, name):
     user = User.query.get_or_404(uid) 
