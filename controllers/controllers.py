@@ -371,6 +371,7 @@ def search_user(name, uid):
             return render_template("view_score.html", name=name, user=user, scores=subject_by_score, quizzes=Quiz.query.all())
     return redirect(url_for("user_dashboard", uid=uid, name=name))
 
+# Search function for user
 def search_subject_by_score(search_txt, user_id):
     score_value = int(search_txt)  
     scores = Score.query.filter_by(user_id=user_id, total_score=score_value).all()
