@@ -358,6 +358,7 @@ def view_score(uid, name):
 
     return render_template("view_score.html", user=user, quizzes=quizzes, dt_time_now=dt_time_now, name=name, scores=scores)
 
+# Search score route for user
 @app.route("/user_search/<uid>/<name>", methods=["GET", "POST"])
 def search_user(name, uid):
     user = User.query.get_or_404(uid)  
