@@ -416,6 +416,7 @@ def get_chapter(id):
     chapter=Chapter.query.filter_by(id=id).first()
     return chapter
 
+# Helper functions to get objects by id
 def get_quiz(id):
     quiz=Quiz.query.filter_by(id=id).first()
     return quiz
