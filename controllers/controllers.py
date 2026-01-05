@@ -411,7 +411,7 @@ def get_subjects():
 def get_subject(id):
     subject=Subject.query.filter_by(id=id).first()
     return subject
-
+# Helper functions to get objects by id
 def get_chapter(id):
     chapter=Chapter.query.filter_by(id=id).first()
     return chapter
