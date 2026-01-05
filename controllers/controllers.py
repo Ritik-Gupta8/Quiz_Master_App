@@ -402,7 +402,7 @@ def get_user_summary(user_id):
     plt.ylabel("Attempted Quizzes",fontsize=14, fontweight="bold")
     plt.yticks(np.arange(0, max(y_counts) + 1, 1))  
     return plt
-
+# Helper functions to get objects
 def get_subjects():
     subjects=Subject.query.all()
     return subjects
