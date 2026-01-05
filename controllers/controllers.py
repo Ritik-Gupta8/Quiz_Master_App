@@ -379,7 +379,7 @@ def search_subject_by_score(search_txt, user_id):
 
 # User summary
 @app.route("/user_summary/<uid>/<name>")
-def user_summary(uid, name):
+def user_summary(uid, name): # user id and name
     user = User.query.get_or_404(uid) 
     plot = get_user_summary(uid)
     plot.savefig("./static/images/user_summary.jpeg")
