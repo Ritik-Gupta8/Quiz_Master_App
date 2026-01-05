@@ -407,6 +407,7 @@ def get_subjects():
     subjects=Subject.query.all()
     return subjects
 
+# Helper functions to get objects by id
 def get_subject(id):
     subject=Subject.query.filter_by(id=id).first()
     return subject
