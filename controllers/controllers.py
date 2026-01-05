@@ -421,6 +421,7 @@ def get_quiz(id):
     quiz=Quiz.query.filter_by(id=id).first()
     return quiz
 
+# Helper functions to get objects by id
 def get_question(id):
     question=Question.query.filter_by(id=id).first()
     return question
