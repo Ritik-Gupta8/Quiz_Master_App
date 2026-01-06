@@ -32,7 +32,7 @@ def signin():
 
     return render_template("login.html")
 # Registration Route
-@app.route("/register",methods=["GET","POST"])
+@app.route("/register",methods=["GET","POST"]) #user registration
 def signup():
     if request.method=="POST":
         uname=request.form.get("user_name")
