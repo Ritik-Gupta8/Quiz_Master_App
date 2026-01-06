@@ -10,7 +10,7 @@ from sqlalchemy import func
 
 
 #starting route
-@app.route("/")
+@app.route("/") #home route
 def home():
     return render_template("index.html")
 
