@@ -15,7 +15,7 @@ def home():
     return render_template("index.html")
 
 #admin login route
-@app.route("/login",methods=["GET","POST"])
+@app.route("/login",methods=["GET","POST"]) #user login
 def signin():
     if request.method=="POST":
         uname=request.form.get("user_name")
