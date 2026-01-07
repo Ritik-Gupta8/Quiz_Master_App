@@ -63,7 +63,7 @@ def user_deatils(name):
     return render_template('user_details.html', users=users,name=name)
 
 # Subject add,get routes for admin
-@app.route("/subject/<name>",methods=["POST","GET"])
+@app.route("/subject/<name>",methods=["POST","GET"]) #add subject
 def add_subject(name):
     if request.method=="POST":
         sname=request.form.get("name")
