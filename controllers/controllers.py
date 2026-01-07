@@ -52,7 +52,7 @@ def signup():
     return render_template("register.html")
 
 #common route for admin
-@app.route("/admin/<name>")
+@app.route("/admin/<name>") #admin dashboard
 def admin_dashboard(name):
     subjects=get_subjects()
     return render_template("admin_dashboard.html",name=name,subjects=subjects)
