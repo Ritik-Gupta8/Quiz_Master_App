@@ -57,7 +57,7 @@ def admin_dashboard(name):
     subjects=get_subjects()
     return render_template("admin_dashboard.html",name=name,subjects=subjects)
 
-@app.route('/user_details/<name>')
+@app.route('/user_details/<name>') #user details route for admin
 def user_deatils(name):
     users = User.query.filter(User.id != 1).all()  
     return render_template('user_details.html', users=users,name=name)
