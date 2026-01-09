@@ -90,7 +90,7 @@ def add_chapter(name,subject_id):
     return render_template("add_chapter.html",subject_id=subject_id,name=name)
 
 # Chapter add,get routes for admin
-@app.route("/edit_subject/<id>/<name>",methods=["GET","POST"])
+@app.route("/edit_subject/<id>/<name>",methods=["GET","POST"]) # edit subject
 def edit_subject(id,name):
     s=get_subject(id)
     if request.method=="POST":
