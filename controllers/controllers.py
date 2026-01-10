@@ -127,7 +127,7 @@ def edit_chapter(id,name):
     return render_template("edit_chapter.html",chapter=c,name=name)
 
 # Delete chapter route for admin
-@app.route("/delete_chapter/<id>/<name>",methods=["GET","POST"])
+@app.route("/delete_chapter/<id>/<name>",methods=["GET","POST"]) # delete chapter
 def delete_chapter(id,name):
     c=get_chapter(id)
     db.session.delete(c)
