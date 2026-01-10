@@ -112,7 +112,7 @@ def delete_subject(id,name):
     return redirect(url_for("admin_dashboard",name=name))
 
 # Chapter edit,get routes for admin
-@app.route("/edit_chapter/<id>/<name>",methods=["GET","POST"])
+@app.route("/edit_chapter/<id>/<name>",methods=["GET","POST"]) # edit chapter
 def edit_chapter(id,name):
     c=get_chapter(id)
 
