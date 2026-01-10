@@ -104,7 +104,7 @@ def edit_subject(id,name):
     return render_template("edit_subject.html",subject=s,name=name)
 
 # Delete subject route for admin
-@app.route("/delete_subject/<id>/<name>",methods=["GET","POST"])
+@app.route("/delete_subject/<id>/<name>",methods=["GET","POST"]) # delete subject
 def delete_subject(id,name):
     s=get_subject(id)
     db.session.delete(s)
