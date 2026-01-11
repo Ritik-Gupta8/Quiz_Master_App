@@ -135,7 +135,7 @@ def delete_chapter(id,name):
     return redirect(url_for("admin_dashboard",name=name))
 
 # Quiz add,get routes for admin
-@app.route("/quiz_management/<name>")
+@app.route("/quiz_management/<name>") # quiz management route for admin
 def quiz_management(name):
     quizzes = Quiz.query.all()
     return render_template("quiz_management.html", name=name, quizzes=quizzes)
