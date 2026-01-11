@@ -142,7 +142,7 @@ def quiz_management(name):
    
 # Add quiz route for admin
 
-@app.route("/add_quiz/<name>/<chapter_id>", methods=["POST", "GET"])
+@app.route("/add_quiz/<name>/<chapter_id>", methods=["POST", "GET"]) # add quiz
 def add_quiz(name, chapter_id):
     if request.method == "POST":
         cid = request.form.get("chapter_id") 
