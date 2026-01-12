@@ -210,7 +210,7 @@ def add_question(quiz_id, name):
     return render_template("add_question.html", quiz_id=quiz_id ,name=name)
 
 # Edit question route for admin
-@app.route("/edit_question/<id>/<name>",methods=["GET","POST"])
+@app.route("/edit_question/<id>/<name>",methods=["GET","POST"]) # edit question
 def edit_question(id,name):
     q=get_question(id)
 
