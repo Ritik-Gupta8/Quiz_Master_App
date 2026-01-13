@@ -234,7 +234,7 @@ def edit_question(id,name):
     
     return render_template("edit_question.html",question=q,name=name)
 # Delete question route for admin
-@app.route("/delete_question/<id>/<name>",methods=["GET","POST"])
+@app.route("/delete_question/<id>/<name>",methods=["GET","POST"]) # delete question
 def delete_question(id,name):
     q=get_question(id)
     db.session.delete(q)
