@@ -242,7 +242,7 @@ def delete_question(id,name):
     return redirect(url_for("quiz_management",name=name))
 
 # Search route for admin
-@app.route("/search/<name>", methods=["GET", "POST"])
+@app.route("/search/<name>", methods=["GET", "POST"]) # search route for admin
 def search(name):
     if request.method == "POST":
         search_txt = request.form.get("search_txt")
