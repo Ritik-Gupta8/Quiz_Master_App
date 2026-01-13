@@ -260,7 +260,7 @@ def search(name):
     return redirect(url_for("admin_dashboard", name=name))
 
 # Search functions
-def search_by_user(search_txt):
+def search_by_user(search_txt): # search by user full name
     users = User.query.filter(User.full_name.ilike(f"%{search_txt}%")).all()
     return users
 # Search by subject name
