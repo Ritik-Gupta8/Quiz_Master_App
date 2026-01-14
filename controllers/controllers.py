@@ -191,7 +191,7 @@ def delete_quiz(id, name):
     return redirect(url_for("quiz_management", name=name))
 
 # Question add,get routes for admin
-@app.route("/add_question/<quiz_id>/<name>", methods=["POST", "GET"])
+@app.route("/add_question/<quiz_id>/<name>", methods=["POST", "GET"]) # add question
 def add_question(quiz_id, name):
     if request.method=="POST":
         question=request.form.get("question_statement")
