@@ -264,7 +264,7 @@ def search_by_user(search_txt): # search by user full name
     users = User.query.filter(User.full_name.ilike(f"%{search_txt}%")).all()
     return users
 # Search by subject name
-def search_by_subject(search_txt):
+def search_by_subject(search_txt): # search by subject name
     subjects=Subject.query.filter(Subject.name.ilike(f"%{search_txt}%")).all()
     return subjects
 
