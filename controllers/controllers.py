@@ -281,7 +281,7 @@ def admin_summary(name):
     return render_template("admin_summary.html",name=name)
 
 # Admin summary plot function
-def get_admin_summary():
+def get_admin_summary(): # admin summary plot
     subjects = Subject.query.all()
     summary = {}
     for subject in subjects:
