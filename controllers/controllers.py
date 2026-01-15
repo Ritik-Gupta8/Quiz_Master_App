@@ -323,7 +323,7 @@ def start_quiz(qid, uid, name):
     return render_template("start_quiz.html", user=user, quiz=quiz, questions=questions, name=user.email, end_time=end_time_str)
 
 # Submit quiz route for user
-@app.route("/submit_quiz/<qid>/<uid>/<name>", methods=["POST"])
+@app.route("/submit_quiz/<qid>/<uid>/<name>", methods=["POST"]) # submit quiz
 def submit_quiz(qid, uid, name):
     user = User.query.get_or_404(uid)  
     quiz = Quiz.query.get_or_404(qid)
