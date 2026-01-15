@@ -273,7 +273,7 @@ def search_by_quiz(search_txt): # search by chapter name in quiz
     return quizzes
 
 # Admin summary route
-@app.route("/admin_summary/<name>")
+@app.route("/admin_summary/<name>") # admin summary
 def admin_summary(name):
     plot = get_admin_summary() 
     plot.savefig("./static/images/admin_summary.jpeg")
