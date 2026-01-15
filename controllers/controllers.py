@@ -268,7 +268,7 @@ def search_by_subject(search_txt): # search by subject name
     subjects=Subject.query.filter(Subject.name.ilike(f"%{search_txt}%")).all()
     return subjects
 
-def search_by_quiz(search_txt):
+def search_by_quiz(search_txt): # search by chapter name in quiz
     quizzes = Quiz.query.join(Chapter).filter(Chapter.name.ilike(f"%{search_txt}%")).all()
     return quizzes
 
