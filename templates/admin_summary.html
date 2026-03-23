@@ -1,16 +1,30 @@
-{%extends "admin_layout.html"%} <!--Inherited all features-->
-{%block content%}
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <div class="card" style="width: auto;">
-                        <div class="card-body">
-                            <h5 class="card-subtitle mb-2 text-muted">Top Scores as Per Subject</h5>
-                            <img src="{{ url_for('static', filename='images/admin_summary.jpeg') }}" width="auto" height="auto" alt="User Summary Chart">
-                        </div>
-                    </div>
-                </div>
+{% extends "admin_layout.html" %}
+{% block content %}
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">System Analytics</h2>
+            <p class="text-slate-500 mt-1">Overview of performance data across all subjects.</p>
+        </div>
+        <div class="h-12 w-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="px-8 py-6 bg-slate-50 border-b border-slate-100">
+            <h3 class="text-lg font-bold text-slate-700">Top Scores Distribution</h3>
+            <p class="text-sm text-slate-500">Visual representation of the highest achievements by subject.</p>
+        </div>
+        <div class="p-8 flex justify-center">
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
+                <img src="{{ url_for('static', filename='images/admin_summary.jpeg') }}" 
+                     class="relative rounded-xl shadow-lg border border-slate-100 max-w-full h-auto" 
+                     alt="Admin Summary Chart">
             </div>
         </div>
-{%endblock%}
+    </div>
+</div>
+{% endblock %}
    
