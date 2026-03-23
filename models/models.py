@@ -11,12 +11,18 @@ class User(db.Model):
 
     scores = db.relationship("Score", cascade="all,delete", backref="user", lazy=True)
 
+    def __repr__(self):
+        return f"<User {self.id}: {self.full_name}>"
+
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), unique=True, nullable=False)
     description = db.Column(db.Text, nullable=True)
 
     chapters = db.relationship("Chapter", cascade="all,delete", backref="subject", lazy=True)
+
+    def __repr__(self):
+        return f"<Subject {self.id}: {self.name}>"
 
 class Chapter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,6 +31,9 @@ class Chapter(db.Model):
     subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
 
     quizzes = db.relationship("Quiz", cascade="all,delete", backref="chapter", lazy=True)
+
+    def __repr__(self):
+        return f"<Chapter {self.id}: {self.name}>"
 
 class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -35,6 +44,9 @@ class Quiz(db.Model):
 
     questions = db.relationship("Question", cascade="all,delete", backref="quiz", lazy=True)
     scores = db.relationship("Score", cascade="all,delete", backref="quiz", lazy=True)
+
+    def __repr__(self):
+        return f"<Quiz {self.id}: chapter={self.chapter_id}, date={self.date_of_quiz}>"
 
 class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,3 +65,6 @@ class Score(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
     total_score = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"<Score {self.id}: user={self.user_id}, quiz={self.quiz_id}, score={self.total_score}>"
