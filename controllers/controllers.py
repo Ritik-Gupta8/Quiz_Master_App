@@ -109,8 +109,9 @@ def edit_subject(id,name):
 @app.route("/delete_subject/<id>/<name>",methods=["GET","POST"])
 def delete_subject(id,name):
     s=get_subject(id)
-    db.session.delete(s)
-    db.session.commit()
+    if s:
+        db.session.delete(s)
+        db.session.commit()
     return redirect(url_for("admin_dashboard",name=name))
 
 @app.route("/edit_chapter/<id>/<name>",methods=["GET","POST"])
@@ -130,8 +131,9 @@ def edit_chapter(id,name):
 @app.route("/delete_chapter/<id>/<name>",methods=["GET","POST"])
 def delete_chapter(id,name):
     c=get_chapter(id)
-    db.session.delete(c)
-    db.session.commit()
+    if c:
+        db.session.delete(c)
+        db.session.commit()
     return redirect(url_for("admin_dashboard",name=name))
 
 @app.route("/quiz_management/<name>")
@@ -230,8 +232,9 @@ def edit_question(id,name):
 @app.route("/delete_question/<id>/<name>",methods=["GET","POST"])
 def delete_question(id,name):
     q=get_question(id)
-    db.session.delete(q)
-    db.session.commit()
+    if q:
+        db.session.delete(q)
+        db.session.commit()
     return redirect(url_for("quiz_management",name=name))
 
 @app.route("/generate_ai_quiz/<name>", methods=["GET", "POST"])
