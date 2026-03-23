@@ -9,30 +9,28 @@ import numpy as np
 from sqlalchemy import func
 
 
-#starting route
 @app.route("/") 
 def home():
     return render_template("index.html")
 
-#admin login route
-@app.route("/login",methods=["GET","POST"]) #user login
+@app.route("/login",methods=["GET","POST"])
 def signin():
     if request.method=="POST":
         uname=request.form.get("user_name")
         pwd=request.form.get("password")
 
         usr=User.query.filter_by(email=uname,password=pwd).first()
-        if usr and usr.role==0: #Existed and admin
+        if usr and usr.role==0:
             return redirect(url_for("admin_dashboard",name=uname))
-        elif usr and usr.role==1: #Existed and user
+        elif usr and usr.role==1:
             return redirect(url_for("user_dashboard", name=uname, uid=usr.id)) 
         else:
             return render_template("login.html",msg="Invalid email or password. Please try again.")
 
 
     return render_template("login.html")
-# Registration Route
-@app.route("/register",methods=["GET","POST"]) #user registration
+
+@app.route("/register",methods=["GET","POST"])
 def signup():
     if request.method=="POST":
         uname=request.form.get("user_name")
@@ -51,19 +49,17 @@ def signup():
 
     return render_template("register.html")
 
-#common route for admin
-@app.route("/admin/<name>") #admin dashboard
+@app.route("/admin/<name>")
 def admin_dashboard(name):
     subjects=get_subjects()
     return render_template("admin_dashboard.html",name=name,subjects=subjects)
 
-@app.route('/user_details/<name>') #user details route for admin
+@app.route('/user_details/<name>')
 def user_deatils(name):
     users = User.query.filter(User.id != 1).all()  
     return render_template('user_details.html', users=users,name=name)
 
-# Subject add,get routes for admin
-@app.route("/subject/<name>",methods=["POST","GET"]) #add subject
+@app.route("/subject/<name>",methods=["POST","GET"])
 def add_subject(name):
     if request.method=="POST":
         sname=request.form.get("name")
@@ -89,8 +85,7 @@ def add_chapter(name,subject_id):
 
     return render_template("add_chapter.html",subject_id=subject_id,name=name)
 
-# Chapter add,get routes for admin
-@app.route("/edit_subject/<id>/<name>",methods=["GET","POST"]) # edit subject
+@app.route("/edit_subject/<id>/<name>",methods=["GET","POST"])
 def edit_subject(id,name):
     s=get_subject(id)
     if request.method=="POST":
@@ -103,16 +98,14 @@ def edit_subject(id,name):
     
     return render_template("edit_subject.html",subject=s,name=name)
 
-# Delete subject route for admin
-@app.route("/delete_subject/<id>/<name>",methods=["GET","POST"]) # delete subject
+@app.route("/delete_subject/<id>/<name>",methods=["GET","POST"])
 def delete_subject(id,name):
     s=get_subject(id)
     db.session.delete(s)
     db.session.commit()
     return redirect(url_for("admin_dashboard",name=name))
 
-# Chapter edit,get routes for admin
-@app.route("/edit_chapter/<id>/<name>",methods=["GET","POST"]) # edit chapter
+@app.route("/edit_chapter/<id>/<name>",methods=["GET","POST"])
 def edit_chapter(id,name):
     c=get_chapter(id)
 
@@ -126,23 +119,19 @@ def edit_chapter(id,name):
     
     return render_template("edit_chapter.html",chapter=c,name=name)
 
-# Delete chapter route for admin
-@app.route("/delete_chapter/<id>/<name>",methods=["GET","POST"]) # delete chapter
+@app.route("/delete_chapter/<id>/<name>",methods=["GET","POST"])
 def delete_chapter(id,name):
     c=get_chapter(id)
     db.session.delete(c)
     db.session.commit()
     return redirect(url_for("admin_dashboard",name=name))
 
-# Quiz add,get routes for admin
-@app.route("/quiz_management/<name>") # quiz management route for admin
+@app.route("/quiz_management/<name>")
 def quiz_management(name):
     quizzes = Quiz.query.all()
     return render_template("quiz_management.html", name=name, quizzes=quizzes)
-   
-# Add quiz route for admin
 
-@app.route("/add_quiz/<name>/<chapter_id>", methods=["POST", "GET"]) # add quiz
+@app.route("/add_quiz/<name>/<chapter_id>", methods=["POST", "GET"])
 def add_quiz(name, chapter_id):
     if request.method == "POST":
         cid = request.form.get("chapter_id") 
@@ -160,8 +149,7 @@ def add_quiz(name, chapter_id):
     chapter = Chapter.query.get_or_404(chapter_id)
     return render_template("add_quiz.html", name=name, chapters=chapters, selected_chapter_id=chapter_id, selected_chapter_name=chapter.name)
 
-# Edit quiz route for admin
-@app.route("/edit_quiz/<id>/<name>",methods=["GET","POST"]) # edit quiz
+@app.route("/edit_quiz/<id>/<name>",methods=["GET","POST"])
 def edit_quiz(id, name):
     q=get_quiz(id)
    
@@ -181,7 +169,6 @@ def edit_quiz(id, name):
     chapters = Chapter.query.all()
     return render_template("edit_quiz.html",name=name,quiz=q,chapters=chapters)
 
-# Delete quiz route for admin
 @app.route("/delete_quiz/<id>/<name>", methods=["GET", "POST"])
 def delete_quiz(id, name):  
     q = get_quiz(id)
@@ -190,8 +177,7 @@ def delete_quiz(id, name):
         db.session.commit()
     return redirect(url_for("quiz_management", name=name))
 
-# Question add,get routes for admin
-@app.route("/add_question/<quiz_id>/<name>", methods=["POST", "GET"]) # add question
+@app.route("/add_question/<quiz_id>/<name>", methods=["POST", "GET"])
 def add_question(quiz_id, name):
     if request.method=="POST":
         question=request.form.get("question_statement")
@@ -209,8 +195,7 @@ def add_question(quiz_id, name):
     
     return render_template("add_question.html", quiz_id=quiz_id ,name=name)
 
-# Edit question route for admin
-@app.route("/edit_question/<id>/<name>",methods=["GET","POST"]) # edit question
+@app.route("/edit_question/<id>/<name>",methods=["GET","POST"])
 def edit_question(id,name):
     q=get_question(id)
 
@@ -233,16 +218,15 @@ def edit_question(id,name):
         return redirect(url_for("quiz_management",name=name))
     
     return render_template("edit_question.html",question=q,name=name)
-# Delete question route for admin
-@app.route("/delete_question/<id>/<name>",methods=["GET","POST"]) # delete question
+
+@app.route("/delete_question/<id>/<name>",methods=["GET","POST"])
 def delete_question(id,name):
     q=get_question(id)
     db.session.delete(q)
     db.session.commit()
     return redirect(url_for("quiz_management",name=name))
 
-# Search route for admin
-@app.route("/search/<name>", methods=["GET", "POST"]) # search route for admin
+@app.route("/search/<name>", methods=["GET", "POST"])
 def search(name):
     if request.method == "POST":
         search_txt = request.form.get("search_txt")
@@ -259,29 +243,26 @@ def search(name):
             return render_template("quiz_management.html", name=name, quizzes=by_quiz)
     return redirect(url_for("admin_dashboard", name=name))
 
-# Search functions
-def search_by_user(search_txt): # search by user full name
+def search_by_user(search_txt):
     users = User.query.filter(User.full_name.ilike(f"%{search_txt}%")).all()
     return users
-# Search by subject name
-def search_by_subject(search_txt): # search by subject name
+
+def search_by_subject(search_txt):
     subjects=Subject.query.filter(Subject.name.ilike(f"%{search_txt}%")).all()
     return subjects
 
-def search_by_quiz(search_txt): # search by chapter name in quiz
+def search_by_quiz(search_txt):
     quizzes = Quiz.query.join(Chapter).filter(Chapter.name.ilike(f"%{search_txt}%")).all()
     return quizzes
 
-# Admin summary route
-@app.route("/admin_summary/<name>") # admin summary
+@app.route("/admin_summary/<name>")
 def admin_summary(name):
     plot = get_admin_summary() 
     plot.savefig("./static/images/admin_summary.jpeg")
     plot.clf()
     return render_template("admin_summary.html",name=name)
 
-# Admin summary plot function
-def get_admin_summary(): # admin summary plot
+def get_admin_summary():
     subjects = Subject.query.all()
     summary = {}
     for subject in subjects:
@@ -298,18 +279,14 @@ def get_admin_summary(): # admin summary plot
     plt.ylim(0, max(y_scores) + 2) 
     return plt 
 
-#  ----------------------------------------------------User wok from here ----------------------------------------------------
-
-#common route for user          
 @app.route("/user/<uid>/<name>")
-def user_dashboard(uid, name): # user id and name
+def user_dashboard(uid, name):
     user = User.query.get_or_404(uid)
     quizzes = Quiz.query.join(Question).group_by(Quiz.id).all()
     dt_time_now = date.today()
     return render_template("user_dashboard.html", user=user, name=name, quizzes=quizzes, dt_time_now=dt_time_now)
 
-# Start quiz route for user
-@app.route("/start_quiz/<qid>/<uid>/<name>") # start quiz
+@app.route("/start_quiz/<qid>/<uid>/<name>")
 def start_quiz(qid, uid, name):
     user = User.query.get_or_404(uid)
     quiz = Quiz.query.get_or_404(qid)
@@ -317,13 +294,12 @@ def start_quiz(qid, uid, name):
 
     hours, minutes = map(int, quiz.time_duration.split(":"))  
     end_time = datetime.now(timezone.utc) + timedelta(hours=hours, minutes=minutes)
-    end_time_str = end_time.isoformat()  # Send in ISO 8601 format with 'Z'
+    end_time_str = end_time.isoformat()
 
     session["quiz_end_time"] = end_time_str
     return render_template("start_quiz.html", user=user, quiz=quiz, questions=questions, name=user.email, end_time=end_time_str)
 
-# Submit quiz route for user
-@app.route("/submit_quiz/<qid>/<uid>/<name>", methods=["POST"]) # submit quiz
+@app.route("/submit_quiz/<qid>/<uid>/<name>", methods=["POST"])
 def submit_quiz(qid, uid, name):
     user = User.query.get_or_404(uid)  
     quiz = Quiz.query.get_or_404(qid)
@@ -348,7 +324,6 @@ def submit_quiz(qid, uid, name):
     db.session.commit()
     return redirect(url_for("user_dashboard", uid=uid, name=name))
 
-# View score route for user
 @app.route("/view_score/<uid>/<name>")
 def view_score(uid, name):
     user = User.query.get_or_404(uid) 
@@ -358,7 +333,6 @@ def view_score(uid, name):
 
     return render_template("view_score.html", user=user, quizzes=quizzes, dt_time_now=dt_time_now, name=name, scores=scores)
 
-# Search score route for user
 @app.route("/user_search/<uid>/<name>", methods=["GET", "POST"])
 def search_user(name, uid):
     user = User.query.get_or_404(uid)  
@@ -371,23 +345,20 @@ def search_user(name, uid):
             return render_template("view_score.html", name=name, user=user, scores=subject_by_score, quizzes=Quiz.query.all())
     return redirect(url_for("user_dashboard", uid=uid, name=name))
 
-# Search function for user
 def search_subject_by_score(search_txt, user_id):
     score_value = int(search_txt)  
     scores = Score.query.filter_by(user_id=user_id, total_score=score_value).all()
     return scores
 
-# User summary
 @app.route("/user_summary/<uid>/<name>")
-def user_summary(uid, name): # user id and name
+def user_summary(uid, name):
     user = User.query.get_or_404(uid) 
     plot = get_user_summary(uid)
     plot.savefig("./static/images/user_summary.jpeg")
     plot.clf()
     return render_template("user_summary.html", user=user, name=name)
 
-# User summary plot
-def get_user_summary(user_id): # user id
+def get_user_summary(user_id):
     subjects = Subject.query.all()
     summary = {}
     for subject in subjects:
@@ -402,26 +373,23 @@ def get_user_summary(user_id): # user id
     plt.ylabel("Attempted Quizzes",fontsize=14, fontweight="bold")
     plt.yticks(np.arange(0, max(y_counts) + 1, 1))  
     return plt
-# Helper functions to get objects
+
 def get_subjects():
     subjects=Subject.query.all()
     return subjects
 
-# Helper functions to get objects by id
 def get_subject(id):
     subject=Subject.query.filter_by(id=id).first()
     return subject
-# Helper functions to get objects by id
-def get_chapter(id): # get chapter by id
+
+def get_chapter(id):
     chapter=Chapter.query.filter_by(id=id).first()
     return chapter
 
-# Helper functions to get objects by id
 def get_quiz(id):
     quiz=Quiz.query.filter_by(id=id).first()
     return quiz
 
-# Helper functions to get objects by id
 def get_question(id):
     question=Question.query.filter_by(id=id).first()
     return question
