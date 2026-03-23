@@ -7,6 +7,9 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np  
 from sqlalchemy import func
+from controllers.gemini_service import generate_quiz_questions
+import os
+
 
 
 @app.route("/") 
@@ -225,6 +228,57 @@ def delete_question(id,name):
     db.session.delete(q)
     db.session.commit()
     return redirect(url_for("quiz_management",name=name))
+
+@app.route("/generate_ai_quiz/<name>", methods=["GET", "POST"])
+def generate_ai_quiz(name):
+    if request.method == "POST":
+        chapter_id = request.form.get("chapter_id")
+        num_questions = int(request.form.get("num_questions", 5))
+        level = request.form.get("level", "Medium")
+        
+        chapter = Chapter.query.get_or_404(chapter_id)
+        subject = chapter.subject
+        
+        # Call Gemini AI
+        results = generate_quiz_questions(subject.name, chapter.name, num_questions, level)
+        
+        if isinstance(results, dict) and "error" in results:
+            subjects = Subject.query.all()
+            return render_template("generate_ai_quiz.html", name=name, subjects=subjects, 
+                                 has_api_key=os.environ.get("GOOGLE_API_KEY") is not None,
+                                 error=results["error"])
+        
+        # Create a new Quiz for this generation
+        # Defaulting date to today and duration to 30 mins
+        new_quiz = Quiz(
+            chapter_id=chapter_id, 
+            date_of_quiz=date.today(), 
+            no_of_questions=len(results), 
+            time_duration="00:30"
+        )
+        db.session.add(new_quiz)
+        db.session.flush() # Get quiz ID
+        
+        # Add questions
+        for q_data in results:
+            new_question = Question(
+                question_statement=q_data.get("question_statement"),
+                question_type="MCQ",
+                quiz_id=new_quiz.id,
+                option1=q_data.get("option1"),
+                option2=q_data.get("option2"),
+                option3=q_data.get("option3"),
+                option4=q_data.get("option4"),
+                correct_option=q_data.get("correct_option")
+            )
+            db.session.add(new_question)
+            
+        db.session.commit()
+        return redirect(url_for("quiz_management", name=name))
+
+    subjects = Subject.query.all()
+    has_api_key = os.environ.get("GOOGLE_API_KEY") is not None
+    return render_template("generate_ai_quiz.html", name=name, subjects=subjects, has_api_key=has_api_key)
 
 @app.route("/search/<name>", methods=["GET", "POST"])
 def search(name):
