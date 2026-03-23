@@ -1,37 +1,53 @@
-{%extends "admin_layout.html"%} <!--Inherited all features-->
-{%block content%}
-            <div class="center"><h3> New Quiz </h3></div>
-            <form action="/add_quiz/{{ name }}/{{ selected_chapter_id }}" method="POST">
-            <div class="input_form">
-        
-                <div class="mb-3">
-                    <label for="chapter_id" class="form-label">Selected Chapter</label>
-                    <select class="form-control" readonly>
-                        <option value="{{ selected_chapter_id }}">{{ selected_chapter_name }}</option>
-                    </select>
+{% extends "admin_layout.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+        <div class="px-8 py-6 bg-slate-50 border-b border-slate-100">
+            <h3 class="text-xl font-bold text-slate-900">Configure New Quiz</h3>
+            <p class="text-sm text-slate-500">Set the schedule and parameters for the selected chapter.</p>
+        </div>
+        <form action="/add_quiz/{{ name }}/{{ selected_chapter_id }}" method="POST" class="p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-slate-700">Selected Chapter</label>
+                    <div class="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 font-medium">
+                        {{ selected_chapter_name }}
+                    </div>
                     <input type="hidden" name="chapter_id" value="{{ selected_chapter_id }}">
                 </div>
                 
-                <div class="mb-3">
-                    <label for="date_of_quiz" class="form-label">Date of Quiz</label>
-                    <input type="date" class="form-control" name="date_of_quiz" id="date_of_quiz" required>
+                <div class="space-y-2">
+                    <label for="date_of_quiz" class="block text-sm font-semibold text-slate-700">Quiz Date</label>
+                    <input type="date" name="date_of_quiz" id="date_of_quiz" required
+                           class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none">
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label for="time_duration" class="form-label">Time Duration</label>
-                    <input type="text" class="form-control" name="time_duration" id="time_duration" placeholder="(HH:MM) e.g.,00:30"
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="time_duration" class="block text-sm font-semibold text-slate-700">Duration (HH:MM)</label>
+                    <input type="text" name="time_duration" id="time_duration" placeholder="e.g. 00:30"
                            pattern="^([0-9]{1,2}):([0-5][0-9])$"
-                           title="Please enter the duration in hh:mm format (e.g., 00:10 for 10 minutes)">
+                           title="Please enter duration in HH:MM format"
+                           class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none">
                 </div>
                 
-                <div class="mb-3">
-                    <label for="no_of_questions" class="form-label">Total Questions</label>
-                    <input type="number" class="form-control" name="no_of_questions"id="no_of_questions" placeholder="Enter total number of questions" required>
-                </div>             
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <a href ="/admin/{{name}}" type="button" class="btn btn-primary"> Cancel</a>
+                <div class="space-y-2">
+                    <label for="no_of_questions" class="block text-sm font-semibold text-slate-700">Total Questions</label>
+                    <input type="number" name="no_of_questions" id="no_of_questions" required placeholder="Number of Qs"
+                           class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none">
                 </div>
-            </form>
             </div>
-{%endblock%}
+            
+            <div class="flex items-center justify-end space-x-4 pt-4">
+                <a href="/admin/{{ name }}" class="px-6 py-3 text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all">
+                    Create Quiz
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

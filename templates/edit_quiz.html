@@ -1,39 +1,60 @@
-{%extends "admin_layout.html"%} <!--Inherited all features-->
-{%block content%}
-            {%if quiz%}
-            <div class="center"><h3> New Quiz </h3></div>
-            <form action="/edit_quiz/{{quiz.id}}/{{name}}" method="POST">
-            <div class="input_form">
-                <div class="mb-3">
-                    <label for="chapter_id" class="form-label">Select Chapter</label>
-                    <select class="form-control" name="chapter_id" id="chapter_id" required>
-                        {% for chapter in chapters %}
-                            <option value="{{ chapter.id }}" {% if chapter.id == quiz.chapter_id %}selected{% endif %}>
-                                {{ chapter.name }} (ID: {{ chapter.id }})
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>       
-                <div class="mb-3">
-                    <label for="date_of_quiz" class="form-label">Date of Quiz</label>
-                    <input type="date" class="form-control" name="date_of_quiz" id="date_of_quiz" value="{{quiz.date_of_quiz}}" required>
-                </div>
-                <div class="mb-3">
-                    <label for="time_duration" class="form-label">Time Duration</label>
-                    <input type="text" class="form-control" name="time_duration" id="time_duration" value="{{quiz.time_duration}}"placeholder="(HH:MM) e.g.,01:00"
-                           pattern="^([0-9]{1,2}):([0-5][0-9])$"
-                           title="Please enter the duration in hh:mm format (e.g., 00:10 for 10 minutes)">
-                </div>
-                <div class="mb-3">
-                    <label for="no_of_questions" class="form-label">Total Questions</label>
-                    <input type="number" class="form-control" name="no_of_questions"id="no_of_questions" value="{{quiz.no_of_questions}}" placeholder="Enter total number of questions" required>
-                </div>             
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                    <a href ="/delete_quiz/{{quiz.id}}/{{name}}" type="button" class="btn btn-danger"> Delete</a>
-                    <a href ="/quiz_management/{{name}}" type="button" class="btn btn-primary"> Cancel</a>
-                </div>
-            </form>
+{% extends "admin_layout.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+        <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+            <div>
+                <h3 class="text-xl font-bold text-slate-900">Edit Quiz Settings</h3>
+                <p class="text-sm text-slate-500">Update parameters for <span class="text-indigo-600 font-semibold">{{ quiz.chapter.name }}</span></p>
             </div>
-            {%endif%}
-{%endblock%}
+            <a href="/delete_quiz/{{ quiz.id }}/{{ name }}" onclick="return confirm('Archive this quiz? Users will no longer be able to take it.')" 
+               class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete Quiz">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </a>
+        </div>
+        <form action="/edit_quiz/{{ quiz.id }}/{{ name }}" method="POST" class="p-8 space-y-6">
+            <div class="space-y-2">
+                <label for="chapter_id" class="block text-sm font-semibold text-slate-700">Associated Chapter</label>
+                <select name="chapter_id" id="chapter_id" required
+                        class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none bg-white">
+                    {% for chapter in chapters %}
+                    <option value="{{ chapter.id }}" {% if chapter.id == quiz.chapter_id %}selected{% endif %}>
+                        {{ chapter.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="date_of_quiz" class="block text-sm font-semibold text-slate-700">Quiz Date</label>
+                    <input type="date" name="date_of_quiz" id="date_of_quiz" value="{{ quiz.date_of_quiz }}" required
+                           class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none">
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="time_duration" class="block text-sm font-semibold text-slate-700">Duration (HH:MM)</label>
+                    <input type="text" name="time_duration" id="time_duration" value="{{ quiz.time_duration }}"
+                           pattern="^([0-9]{1,2}):([0-5][0-9])$"
+                           class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none">
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label for="no_of_questions" class="block text-sm font-semibold text-slate-700">Total Questions Expected</label>
+                <input type="number" name="no_of_questions" id="no_of_questions" value="{{ quiz.no_of_questions }}" required
+                       class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none">
+            </div>
+            
+            <div class="flex items-center justify-end space-x-4 pt-4">
+                <a href="/quiz_management/{{ name }}" class="px-6 py-3 text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all">
+                    Update Quiz
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

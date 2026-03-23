@@ -1,50 +1,90 @@
 {% extends "admin_layout.html" %}
 {% block content %}
-    <div class="container">
-        {% if quizzes %}
-        <div class="row">
-            {% for quiz in quizzes %} 
-                <div class="col">
-                    <div class="card" style="width: 25rem">
-                        <div class="card-body">
-                            <h4 class="center1">
-                                <a href="/edit_quiz/{{ quiz.id }}/{{ name }}">
-                                    Quiz ({{ quiz.chapter.name }}) 
-                                </a>
-                            </h4>
-                            
-                            {% if quiz.questions %}
-                            <table class="my_table">
-                                <tr>
-                                    <th>Question No.</th>
-                                    <th>Question Type</th>
-                                    <th>Action</th>  
-                                </tr>
-                                {% for question in quiz.questions %}
-                                <tr>
-                                    <td>{{ loop.index }}</td>
-                                    <td>{{ question.question_type }}</td>
-                                    <td>
-                                        <a href="/edit_question/{{ question.id }}/{{ name }}" class="btn btn-sm btn-secondary">Edit</a>
-                                        <a href="/delete_question/{{ question.id }}/{{ name }}" class="btn btn-sm btn-danger">Delete</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </table>
-                            {% else %}
-                                <p>No questions available.</p>
-                            {% endif %}
-                            
-                            <div class="center1">
-                                <a href="/add_question/{{ quiz.id }}/{{ name }}" class="btn btn-sm btn-success">+ Add Question</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Quiz Management</h2>
+            <p class="text-slate-500 mt-1">Configure quiz settings and manage question banks.</p>
         </div>
-        {% else %}
-            <h3 class="center">No quizzes available right now.</h3>
-        {% endif %}
+        <div class="flex items-center gap-3">
+            <a href="/generate_ai_quiz/{{ name }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-100 hover:from-purple-700 hover:to-indigo-700 transition-all text-sm group">
+                <svg class="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Generate with AI
+            </a>
+        </div>
     </div>
+
+    {% if quizzes %}
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        {% for quiz in quizzes %}
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">
+                        <a href="/edit_quiz/{{ quiz.id }}/{{ name }}" class="hover:text-indigo-600 transition-colors">Quiz: {{ quiz.chapter.name }}</a>
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Scheduled for: {{ quiz.date_of_quiz }} | Duration: {{ quiz.time_duration }}</p>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
+                    {{ quiz.questions|length }}/{{ quiz.no_of_questions }} Qs
+                </span>
+            </div>
+            
+            <div class="p-6">
+                {% if quiz.questions %}
+                <div class="overflow-hidden rounded-2xl border border-slate-100">
+                    <table class="min-w-full divide-y divide-slate-100 text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 uppercase tracking-wider">No.</th>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 uppercase tracking-wider">Type</th>
+                                <th class="px-4 py-3 text-right font-semibold text-slate-600 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for question in quiz.questions %}
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-4 py-3 text-slate-500 font-medium">{{ loop.index }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 uppercase">{{ question.question_type or 'MCQ' }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-right space-x-2">
+                                    <a href="/edit_question/{{ question.id }}/{{ name }}" class="text-indigo-600 font-bold hover:text-indigo-500">Edit</a>
+                                    <span class="text-slate-300">|</span>
+                                    <a href="/delete_question/{{ question.id }}/{{ name }}" onclick="return confirm('Delete this question?')" class="text-red-600 hover:text-red-500">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-6 text-slate-400 italic">
+                    No questions added yet.
+                </div>
+                {% endif %}
+                
+                <div class="mt-6">
+                    <a href="/add_question/{{ quiz.id }}/{{ name }}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Add Question
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white rounded-3xl p-12 text-center border-2 border-dashed border-slate-200">
+        <div class="mx-auto h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+             <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">No Quizzes Scheduled</h3>
+        <p class="text-slate-500 mt-1 max-w-sm mx-auto">Create a quiz for a chapter from the Curriculum Management section.</p>
+        <a href="/admin/{{ name }}" class="mt-6 inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+            Go to Curriculum
+        </a>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

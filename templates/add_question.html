@@ -1,46 +1,71 @@
-{% extends "admin_layout.html" %} <!-- Inherited all features -->
+{% extends "admin_layout.html" %}
 {% block content %}
-    <div class="center"><h3> Add Question </h3></div>
-    <form action="/add_question/{{ quiz_id }}/{{ name }}" method="POST">
-        <div class="input_form">
-            <div class="mb-3">
-                <label for="question_statement" class="form-label">Question Statement</label>
-                <textarea class="form-control" name="question_statement" id="question_statement" placeholder="Enter the question" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="question_type" class="form-label">Question_type</label>
-                <input type="text" class="form-control" name="question_type" id="question_type" placeholder="Default(MCQ)" required>
-            </div>
-            <div class="mb-3">
-                <label for="option1" class="form-label">Option 1</label>
-                <input type="text" class="form-control" name="option1" id="option1" placeholder="Enter first option" required>
-            </div>
-            <div class="mb-3">
-                <label for="option2" class="form-label">Option 2</label>
-                <input type="text" class="form-control" name="option2" id="option2" placeholder="Enter second option" required>
-            </div>
-            <div class="mb-3">
-                <label for="option3" class="form-label">Option 3</label>
-                <input type="text" class="form-control" name="option3" id="option3" placeholder="Enter third option" required>
-            </div>
-            <div class="mb-3">
-                <label for="option4" class="form-label">Option 4</label>
-                <input type="text" class="form-control" name="option4" id="option4" placeholder="Enter fourth option" required>
-            </div>
-            <div class="mb-3">
-                <label for="correct_option" class="form-label">Correct Option</label>
-                <select class="form-control" name="correct_option" id="correct_option" required>
-                    <option value="" disabled selected>Select correct option</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                    <option value="option4">Option 4</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <a href="/quiz_management/{{ name }}" type="button" class="btn btn-primary">Cancel</a>
-            </div>
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+        <div class="px-8 py-6 bg-slate-50 border-b border-slate-100">
+            <h3 class="text-xl font-bold text-slate-900">Add New Question</h3>
+            <p class="text-sm text-slate-500">Create a multiple-choice question for this quiz.</p>
         </div>
-    </form>
+        <form action="/add_question/{{ quiz_id }}/{{ name }}" method="POST" class="p-8 space-y-6">
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <label for="question_statement" class="block text-sm font-semibold text-slate-700">Question Statement</label>
+                    <textarea name="question_statement" id="question_statement" required rows="3" placeholder="Enter the question here..."
+                              class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label for="question_type" class="block text-sm font-semibold text-slate-700">Question Type</label>
+                        <input type="text" name="question_type" id="question_type" placeholder="e.g. MCQ, true/false" required
+                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label for="correct_option" class="block text-sm font-semibold text-slate-700">Correct Option</label>
+                        <select name="correct_option" id="correct_option" required
+                                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none bg-white font-semibold text-indigo-600">
+                            <option value="" disabled selected>Select Answer</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                            <option value="option4">Option 4</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Option 1</label>
+                        <input type="text" name="option1" id="option1" required placeholder="First option"
+                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Option 2</label>
+                        <input type="text" name="option2" id="option2" required placeholder="Second option"
+                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Option 3</label>
+                        <input type="text" name="option3" id="option3" required placeholder="Third option"
+                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Option 4</label>
+                        <input type="text" name="option4" id="option4" required placeholder="Fourth option"
+                               class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all outline-none">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-end space-x-4 pt-4">
+                <a href="/quiz_management/{{ name }}" class="px-6 py-3 text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all">
+                    Add Question
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
