@@ -8,7 +8,7 @@ def setup_app():
     global app
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quiz_master.sqlite3"
-    app.config["SECRET_KEY"] = os.urandom(24)
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "quiz-master-dev-secret-key-change-in-prod")
     db.init_app(app)
     app.app_context().push()
 
