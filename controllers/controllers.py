@@ -327,10 +327,10 @@ def get_admin_summary():
     y_scores = list(summary.values())
 
     plt.figure(figsize=(10, 5))
-    plt.bar(x_names, y_scores, color="blue" , width=0.4)
+    plt.bar(x_names, y_scores, color="#6366f1" , width=0.4)
     plt.xlabel("Subjects",fontsize=14, fontweight="bold")
     plt.ylabel("Top Score",fontsize=14, fontweight="bold")
-    plt.ylim(0, max(y_scores) + 2) 
+    plt.ylim(0, (max(y_scores) + 2) if y_scores else 5) 
     return plt 
 
 @app.route("/user/<uid>/<name>")
@@ -421,11 +421,11 @@ def get_user_summary(user_id):
         summary[subject.name] = quiz_count 
     x_names = list(summary.keys())
     y_counts = list(summary.values())
-    plt.bar(x_names, y_counts, color="blue", width=0.4)
+    plt.bar(x_names, y_counts, color="#6366f1", width=0.4)
     plt.title("Quizzes Attempted Per Subject",fontsize=14, fontweight="bold")
     plt.xlabel("Subjects",fontsize=14, fontweight="bold")
     plt.ylabel("Attempted Quizzes",fontsize=14, fontweight="bold")
-    plt.yticks(np.arange(0, max(y_counts) + 1, 1))  
+    plt.yticks(np.arange(0, (max(y_counts) + 1) if y_counts else 5, 1))  
     return plt
 
 def get_subjects():
