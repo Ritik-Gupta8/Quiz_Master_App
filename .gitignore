@@ -1,6 +1,32 @@
-
-# Python Tools for Visual Studio (PTVS)
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
 
+# Virtual Environment
+venv/
+env/
+.env
 
+# IDE
+.vscode/
+.idea/
+
+# Database
+instance/
+*.sqlite3
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flask
+*.log
+
+# Generated images (runtime artifacts)
+static/images/admin_summary.jpeg
+static/images/user_summary.jpeg
