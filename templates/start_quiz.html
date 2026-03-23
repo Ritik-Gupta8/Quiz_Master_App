@@ -1,50 +1,87 @@
 {% extends "user_layout.html" %}
 {% block content %}
-
-        <div class="container">
-            <h2 class="text-center mt-3">{{ quiz.chapter.subject.name }} - {{quiz.chapter.name}}</h2>
-            <p class="text-center"><strong>Time Remaining:</strong> <span id="timer"></span></p>
-
-            <form action="/submit_quiz/{{quiz.id}}/{{user.id}}/{{name}}" method="POST">
-                {% for question in questions %}
-                <div class="card my-3">
-                    <div class="card-body">
-                        <h5>{{ loop.index }}. {{ question.question_statement }}</h5>
-                        <input type="hidden" name="question_{{ question.id }}" value="{{ question.id }}">
-                        <div>
-                            <label><input type="radio" name="answer_{{ question.id }}" value="{{ question.option1 }}"> {{ question.option1 }}</label><br>
-                            <label><input type="radio" name="answer_{{ question.id }}" value="{{ question.option2 }}"> {{ question.option2 }}</label><br>
-                            <label><input type="radio" name="answer_{{ question.id }}" value="{{ question.option3 }}"> {{ question.option3 }}</label><br>
-                            <label><input type="radio" name="answer_{{ question.id }}" value="{{ question.option4 }}"> {{ question.option4 }}</label>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-                <button type="submit" class="btn btn-success w-100">Submit Quiz</button>
-            </form>
+<div class="max-w-4xl mx-auto space-y-8 pb-20">
+    <!-- Sticky Quiz Header -->
+    <div class="sticky top-4 z-30 bg-white/80 backdrop-blur-md rounded-3xl border border-white/50 shadow-xl px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">{{ quiz.chapter.subject.name }}</span>
+            <h2 class="text-xl font-bold text-slate-900 leading-tight">{{ quiz.chapter.name }}</h2>
         </div>
+        <div class="flex items-center space-x-6">
+            <div class="text-right">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Time Remaining</p>
+                <p id="timer" class="text-2xl font-black text-indigo-600 tabular-nums font-mono">00m 00s</p>
+            </div>
+            <div class="h-10 w-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
+                <svg class="h-6 w-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+        </div>
+    </div>
 
-        <!-- Using JavaScript  Here For Timer -->
-        <script>
-            function startTimer(endTime) {
-                let timerElement = document.getElementById("timer");
-                let countDownDate = Date.parse(endTime);  // works with ISO 8601
+    <!-- Quiz Content -->
+    <form action="/submit_quiz/{{quiz.id}}/{{user.id}}/{{name}}" method="POST" class="space-y-6">
+        {% for question in questions %}
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-8 space-y-6">
+                <div class="flex items-start gap-4">
+                    <span class="flex-shrink-0 h-8 w-8 bg-slate-100 rounded-lg flex items-center justify-center text-sm font-bold text-slate-500">
+                        {{ loop.index }}
+                    </span>
+                    <h5 class="text-lg font-bold text-slate-900 pt-0.5 leading-relaxed">{{ question.question_statement }}</h5>
+                </div>
+                
+                <input type="hidden" name="question_{{ question.id }}" value="{{ question.id }}">
+                
+                <div class="grid grid-cols-1 gap-3 pl-12">
+                    {% for option in [question.option1, question.option2, question.option3, question.option4] %}
+                    <label class="relative flex items-center p-4 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30 cursor-pointer transition-all group">
+                        <input type="radio" name="answer_{{ question.id }}" value="{{ option }}" required
+                               class="h-5 w-5 text-indigo-600 border-slate-300 focus:ring-indigo-500 transition-all cursor-pointer">
+                        <span class="ml-4 text-slate-700 font-medium group-hover:text-indigo-900 transition-colors">{{ option }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
 
-                let x = setInterval(function () {
-                    let now = new Date().getTime();
-                    let distance = countDownDate - now;
-                    if (distance < 0) {
-                        clearInterval(x);
-                        document.forms[0].submit();  
-                        return;
-                    }
-                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                    timerElement.innerHTML = minutes + "m " + seconds + "s ";
-                }, 1000);
+        <div class="pt-8">
+            <button type="submit" class="w-full py-4 bg-indigo-600 text-white text-lg font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-1 transition-all">
+                Submit All Answers
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function startTimer(endTime) {
+        let timerElement = document.getElementById("timer");
+        let countDownDate = new Date(endTime).getTime();
+
+        let x = setInterval(function () {
+            let now = new Date().getTime();
+            let distance = countDownDate - now;
+
+            if (distance < 0) {
+                clearInterval(x);
+                timerElement.innerHTML = "00m 00s";
+                document.forms[0].submit();
+                return;
             }
-            startTimer("{{ end_time }}");
- 
-        </script>
-        
+
+            let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            timerElement.innerHTML = 
+                (minutes < 10 ? "0" + minutes : minutes) + "m " + 
+                (seconds < 10 ? "0" + seconds : seconds) + "s";
+                
+            // Visual warning when time is low
+            if (distance < 60000) { // 1 minute
+                timerElement.classList.replace('text-indigo-600', 'text-red-500');
+            }
+        }, 1000);
+    }
+    startTimer("{{ end_time }}");
+</script>
 {% endblock %}
