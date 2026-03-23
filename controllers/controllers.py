@@ -16,6 +16,11 @@ import os
 def home():
     return render_template("index.html")
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("signin"))
+
 @app.route("/login",methods=["GET","POST"])
 def signin():
     if request.method=="POST":
