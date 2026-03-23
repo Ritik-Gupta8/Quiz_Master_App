@@ -17,11 +17,6 @@
         </style>
     </head>
     <body>
-            <!-- Add this inside your <body> tag as the first element -->
-        <video autoplay muted loop id="bg-video">
-            <source src="{{ url_for('static', filename='videos/3d.mp4') }}" type="video/mp4">
-            Your browser does not support HTML5 video.
-        </video>
         <div class="center"><h1>Welcome to Quiz Master</h1></div>
             <div class="center"><h3> Login </h3></div>
             <form action="/login" method="POST">
