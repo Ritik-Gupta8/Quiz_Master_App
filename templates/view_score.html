@@ -1,43 +1,77 @@
 {% extends "user_layout.html" %}
 {% block content %}
-    <div class="container">
-        {% if scores %}
-        <div class="row">
-            <div class="col">
-                <div class="card" style="width: 100%;">
-                    <div class="card-body">
-                        <h3 class="text-center">Your Attempted Quiz Scores</h3>
-                        <table class="my_table1">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Subject Name - chapter</th>
-                                    <th>Quiz ID</th>
-                                    <th>No. of Questions</th>
-                                    <th>Attempted Date and Time</th>
-                                    <th>Score</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for score in scores %}
-                                {% set quiz = quizzes | selectattr("id", "equalto", score.quiz_id) | first %}
-                                {% if quiz %}
-                                <tr>
-                                    <td>{{ quiz.chapter.subject.name }} - {{ quiz.chapter.name }}</td> 
-                                    <td>{{ loop.index }}</td>        
-                                    <td>{{ quiz.no_of_questions }}</td>
-                                    <td>{{ score.timestamp.strftime("%Y-%m-%d %H:%M") }}</td>
-                                    <td>{{ score.total_score }} out of {{ quiz.no_of_questions}}</td>
-                                </tr>
-                                {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Your Achievements</h2>
+            <p class="text-slate-500 mt-1">Review your past performance and growth.</p>
         </div>
-        {% else %}
-            <h3 class="text-center mt-4">You haven't attempted any quizzes yet.</h3>
-        {% endif %}
+        <div class="h-12 w-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
     </div>
+
+    {% if scores %}
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-100">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Topic & Chapter</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Attempt Date</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Score</th>
+                        <th class="px-6 py-4 text-right font-bold text-slate-500 uppercase tracking-wider text-[10px]">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for score in scores %}
+                    {% set quiz = quizzes | selectattr("id", "equalto", score.quiz_id) | first %}
+                    {% if quiz %}
+                    <tr class="hover:bg-slate-50 transition-colors group">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-indigo-600 uppercase">{{ quiz.chapter.subject.name }}</span>
+                                <span class="text-sm font-bold text-slate-900">{{ quiz.chapter.name }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                            {{ score.timestamp.strftime("%b %d, %Y") }}
+                            <span class="text-slate-300 block text-xs">{{ score.timestamp.strftime("%I:%M %p") }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <span class="text-lg font-extrabold text-slate-900 mr-2">{{ score.total_score }}</span>
+                                <span class="text-xs font-medium text-slate-400">/ {{ quiz.no_of_questions }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            {% set percentage = (score.total_score / quiz.no_of_questions * 100) | round | int %}
+                            {% if percentage >= 80 %}
+                            <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">Excellence</span>
+                            {% elif percentage >= 50 %}
+                            <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">Passed</span>
+                            {% else %}
+                            <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Developing</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-3xl p-16 text-center border-2 border-dashed border-slate-200">
+        <div class="mx-auto h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+             <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">No History Available</h3>
+        <p class="text-slate-500 mt-2 max-w-sm mx-auto">You haven't attempted any quizzes yet. Your scores will appear here once you finish your first quiz!</p>
+        <a href="/user/{{ name }}" class="mt-8 inline-flex items-center px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+            Take Your First Quiz
+        </a>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
