@@ -1,51 +1,86 @@
-{% extends "admin_layout.html" %} <!-- Inherited all features -->
+{% extends "admin_layout.html" %}
 {% block content %}
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Curriculum Management</h2>
+            <p class="text-slate-500 mt-1">Manage subjects, chapters and their associated quizzes.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/subject/{{ name }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-bold rounded-xl shadow-sm hover:bg-indigo-700 transition-all text-sm">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Add Subject
+            </a>
+        </div>
+    </div>
 
-        
-        <div class="container">
-            {% if subjects %}
-            <div class="row">
-                    {% for subject in subjects %}
-                    <div class="col">
-                    <div class="card" style="width: 30rem">
-                        <div class="card-body">
-                            <h5 class="center1"><a href="/edit_subject/{{ subject.id }}/{{ name }}">{{ subject.name }}</a></h5>
-                                {% if subject.chapters %}
-                                <table class="my_table">
-                                    <tr>
-                                        <th>Chapter Name</th>
-                                        <th>Chapter No.</th>
-                                        
-                                        <th>Action</th>
-                                    </tr>
-                                    {% for chapter in subject.chapters %}
-                                    <tr>
-                                        <td>{{ chapter.name }}</td>
-                                        <td>{{ loop.index }}</td>
-                                        
-                                        <td>
-                                            <a href="/edit_chapter/{{ chapter.id }}/{{ name }}" class="btn btn-sm btn-secondary">Edit</a>    
-                                            <a href="/delete_chapter/{{ chapter.id }}/{{ name }}" class="btn btn-sm btn-danger">Delete</a>
-                                            <a href="/add_quiz/{{ name }}/{{ chapter.id }}" class="btn btn-sm btn-info">Add Quiz</a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </table>
-                                {% else %}
-                                    <p>No chapters available.</p>
-                                {% endif %}
-                                <div class="center1"><a href="/chapter/{{ subject.id }}/{{ name }}" class="btn btn-sm btn-success">Add Chapter</a></div>
-                        </div>
-                    </div>
-                    </div>
-                    {% endfor %}
+    {% if subjects %}
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        {% for subject in subjects %}
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-900">
+                    <a href="/edit_subject/{{ subject.id }}/{{ name }}" class="hover:text-indigo-600 transition-colors">{{ subject.name }}</a>
+                </h3>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
+                    {{ subject.chapters|length }} Chapters
+                </span>
             </div>
-            {% else %}
-                <h3 class="center">No subjects available at the moment.</h3>
-            {% endif %}         
+            
+            <div class="p-6">
+                {% if subject.chapters %}
+                <div class="overflow-hidden rounded-2xl border border-slate-100">
+                    <table class="min-w-full divide-y divide-slate-100 text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-semibold text-slate-600 uppercase tracking-wider">Chapter Name</th>
+                                <th class="px-4 py-3 text-right font-semibold text-slate-600 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for chapter in subject.chapters %}
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="px-4 py-3 text-slate-700">{{ chapter.name }}</td>
+                                <td class="px-4 py-3 text-right space-x-2">
+                                    <a href="/add_quiz/{{ name }}/{{ chapter.id }}" class="text-indigo-600 font-bold hover:text-indigo-500">Add Quiz</a>
+                                    <span class="text-slate-300">|</span>
+                                    <a href="/edit_chapter/{{ chapter.id }}/{{ name }}" class="text-slate-600 hover:text-slate-900">Edit</a>
+                                    <span class="text-slate-300">|</span>
+                                    <a href="/delete_chapter/{{ chapter.id }}/{{ name }}" onclick="return confirm('Are you sure?')" class="text-red-600 hover:text-red-500">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-6 text-slate-400 italic">
+                    No chapters added yet.
+                </div>
+                {% endif %}
+                
+                <div class="mt-6">
+                    <a href="/chapter/{{ subject.id }}/{{ name }}" class="w-full inline-flex items-center justify-center px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Add Chapter
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="center">
-            <a href="/subject/{{ name }}" class="btn btn-primary"> Add Subject</a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white rounded-3xl p-12 text-center border-2 border-dashed border-slate-200">
+        <div class="mx-auto h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+             <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
         </div>
+        <h3 class="text-xl font-bold text-slate-900">No Subjects Found</h3>
+        <p class="text-slate-500 mt-1 max-w-sm mx-auto">Get started by creating your first subject to organize your curriculum.</p>
+        <a href="/subject/{{ name }}" class="mt-6 inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+            Create First Subject
+        </a>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
 
