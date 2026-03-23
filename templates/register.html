@@ -1,53 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <link rel="stylesheet" href="/static/styles/main.css">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <title>Signup</title>
-        <style>
-            body {
-                background-image: url("/static/images/hlo.avif");
-                background-size: cover;           /* Make sure it covers the whole screen */
-                background-repeat: no-repeat;     /* Prevent tiling */
-                background-position: center;      /* Center the image */
-                height: 100vh;                    /* Full viewport height */
-                margin: 0;
-                font-family: Arial, sans-serif;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="center"><h1>Welcome to Quiz Master</h1></div>
-            <div class="center"><h3> Registration </h3></div>
-            <form action="/register" method="POST">
-            <div class="input_form2">
-                <div class="mb-3">
-                    <label for="user_name" class="form-label">Username(E-Mail)</label>
-                    <input type="email" class="form-control" name="user_name"id="user_name" placeholder="example@email.com" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="password" required>
-                </div>
-                <div class="mb-3">
-                    <label for="full_name" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" name="full_name" id="full_name" placeholder="Enter your full name" required>
-                </div>
-                <div class="mb-3">
-                    <label for="qualification" class="form-label">Qualification</label>
-                    <input type="text" class="form-control" name="qualification" id="qualification" placeholder="Enter your qualification.(Optional)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles/main.css">
+    <title>Register | Quiz Master</title>
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">
+            Join <span class="text-indigo-600">QuizMaster</span>
+        </h1>
+        <p class="mt-2 text-sm text-slate-600">
+            Create an account to start mastering your knowledge
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-lg px-4">
+        <div class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 rounded-3xl sm:px-10 border border-slate-100">
+            <form action="/register" method="POST" class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="full_name" class="block text-sm font-semibold text-slate-700">Full Name</label>
+                        <input id="full_name" name="full_name" type="text" required 
+                               placeholder="John Doe"
+                               class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
+                    </div>
+                    <div>
+                        <label for="user_name" class="block text-sm font-semibold text-slate-700">Email Address</label>
+                        <input id="user_name" name="user_name" type="email" autocomplete="email" required 
+                               placeholder="john@example.com"
+                               class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <button type="submit" text-align="center" class="btn btn-success">Submit</button>
-                    Existing user ? <a href ="/login">Login</a>
-                    <div class="err_msg">{{msg}}</div>
-                    <div class="err_msg1">{{msg1}}</div>
+                <div>
+                    <label for="qualification" class="block text-sm font-semibold text-slate-700">Qualification <span class="text-slate-400 font-normal ml-1 text-xs">(optional)</span></label>
+                    <input id="qualification" name="qualification" type="text" 
+                           placeholder="Bachelor's, High School, etc."
+                           class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
+                    <input id="password" name="password" type="password" required 
+                           placeholder="••••••••"
+                           class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
+                        Create Account
+                    </button>
                 </div>
             </form>
 
+            <div class="mt-6 text-center">
+                <p class="text-sm text-slate-600">
+                    Already have an account? <a href="/login" class="font-bold text-indigo-600 hover:text-indigo-500 transition-all">Log in</a>
+                </p>
+                {% if msg %}
+                <div class="mt-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">
+                    {{msg}}
+                </div>
+                {% endif %}
             </div>
         </div>
-    </div>   
+    </div>
 </body>
-</html>
+</html>
