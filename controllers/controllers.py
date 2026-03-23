@@ -400,7 +400,10 @@ def search_user(name, uid):
     return redirect(url_for("user_dashboard", uid=uid, name=name))
 
 def search_subject_by_score(search_txt, user_id):
-    score_value = int(search_txt)  
+    try:
+        score_value = int(search_txt)  
+    except ValueError:
+        return []
     scores = Score.query.filter_by(user_id=user_id, total_score=score_value).all()
     return scores
 
