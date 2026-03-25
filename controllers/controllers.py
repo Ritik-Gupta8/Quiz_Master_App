@@ -468,7 +468,7 @@ def submit_quiz(qid, uid, name):
         db.session.add(new_score)
     
     db.session.commit()
-    return redirect(url_for("user_dashboard", uid=uid, name=name))
+    return redirect(url_for("view_score", uid=uid, name=name))
 
 @app.route("/view_score/<uid>/<name>")
 def view_score(uid, name):
