@@ -27,21 +27,26 @@
                         <a href="/user_summary/{{user.id}}/{{name}}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Progress</a>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <form class="hidden md:flex relative group" method="POST" action="/user_search/{{user.id}}/{{name}}">
-                        <input type="search" placeholder="Search quizzes..." name="search_txt" id="search_txt" 
-                               class="pl-10 pr-4 py-1.5 border border-slate-200 rounded-full text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all w-48 group-focus-within:w-64">
-                        <div class="absolute left-3 top-2 text-slate-400">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        </div>
-                    </form>
-                    <div class="flex items-center text-sm font-medium text-slate-600 space-x-4">
-                        <span class="hidden lg:inline">Hello, <span class="text-indigo-600 font-semibold">{{name}}</span></span>
-                        <a href="/logout" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Logout
-                        </a>
-                    </div>
+                <div class="flex items-center sm:hidden">
+                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="p-2 rounded-md text-slate-400 hover:text-indigo-600 hover:bg-slate-100 focus:outline-none transition-all">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+                    </button>
                 </div>
+                <div class="hidden sm:flex items-center text-sm font-medium text-slate-600 space-x-4">
+                    <span class="hidden lg:inline">Hello, <span class="text-indigo-600 font-semibold">{{name}}</span></span>
+                    <a href="/logout" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden sm:hidden border-t border-indigo-50 bg-white/95 backdrop-blur-md">
+            <div class="pt-2 pb-3 space-y-1 px-4">
+                <a href="/user/{{user.id}}/{{name}}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Home</a>
+                <a href="/view_score/{{user.id}}/{{name}}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">My Scores</a>
+                <a href="/user_summary/{{user.id}}/{{name}}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Progress</a>
+                <a href="/logout" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</a>
             </div>
         </div>
     </nav>
