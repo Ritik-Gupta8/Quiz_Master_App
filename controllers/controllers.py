@@ -415,11 +415,17 @@ def start_quiz(qid, uid, name):
     quiz = Quiz.query.get_or_404(qid)
     questions = Question.query.filter_by(quiz_id=qid).all()
 
-    hours, minutes = map(int, quiz.time_duration.split(":"))  
-    end_time = datetime.now(timezone.utc) + timedelta(hours=hours, minutes=minutes)
-    end_time_str = end_time.isoformat()
-
-    session["quiz_end_time"] = end_time_str
+    # Use a quiz-specific session key to prevent reset on refresh
+    session_key = f"quiz_end_time_{qid}_{uid}"
+    end_time_str = session.get(session_key)
+    
+    if not end_time_str:
+        # First time starting, calculate end time
+        hours, minutes = map(int, quiz.time_duration.split(":"))  
+        end_time = datetime.now(timezone.utc) + timedelta(hours=hours, minutes=minutes)
+        end_time_str = end_time.isoformat()
+        session[session_key] = end_time_str
+    
     return render_template("start_quiz.html", user=user, quiz=quiz, questions=questions, name=user.email, end_time=end_time_str)
 
 @app.route("/submit_quiz/<qid>/<uid>/<name>", methods=["POST"])
@@ -428,11 +434,28 @@ def submit_quiz(qid, uid, name):
     quiz = Quiz.query.get_or_404(qid)
     questions = Question.query.filter_by(quiz_id=qid).all()
 
-    end_time_str = session.get("quiz_end_time")
+    session_key = f"quiz_end_time_{qid}_{uid}"
+    end_time_str = session.get(session_key)
+    
     if end_time_str:
         end_time = datetime.fromisoformat(end_time_str)
-        if datetime.now(timezone.utc) > end_time:
+        # Add a small buffer of 5 seconds for network latency
+        if datetime.now(timezone.utc) > end_time + timedelta(seconds=5):
             return "Time is up! Your answers were not submitted in time.", 403  
+
+    total_score = sum(1 for q in questions if request.form.get(f"answer_{q.id}") == getattr(q, q.correct_option))
+    timestamp = datetime.now() 
+    existing_score = Score.query.filter_by(quiz_id=quiz.id, user_id=user.id).first()
+    if existing_score:
+        existing_score.total_score = total_score
+        existing_score.timestamp = timestamp 
+    else:
+        new_score = Score(quiz_id=quiz.id, user_id=user.id, total_score=total_score, timestamp=timestamp)
+        db.session.add(new_score)
+    
+    db.session.commit()
+    # Clear the specific quiz timer on completion
+    session.pop(session_key, None)
 
     total_score = sum(1 for q in questions if request.form.get(f"answer_{q.id}") == getattr(q, q.correct_option))
     timestamp = datetime.now() 
