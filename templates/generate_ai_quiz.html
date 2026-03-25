@@ -26,6 +26,19 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Grade Level -->
+                    <div class="space-y-2">
+                        <label for="grade" class="block text-sm font-semibold text-slate-700">Target Grade</label>
+                        <select name="grade" id="grade" required
+                                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all outline-none bg-white">
+                            <option value="8th">8th Grade</option>
+                            <option value="9th">9th Grade</option>
+                            <option value="10th" selected>10th Grade</option>
+                            <option value="11th">11th Grade</option>
+                            <option value="12th">12th Grade</option>
+                        </select>
+                    </div>
+
                     <!-- Difficulty Level -->
                     <div class="space-y-2">
                         <label for="level" class="block text-sm font-semibold text-slate-700">Difficulty Level</label>
@@ -36,11 +49,13 @@
                             <option value="Hard">Advanced (Hard)</option>
                         </select>
                     </div>
+                </div>
 
+                <div class="grid grid-cols-1 gap-6">
                     <!-- Number of Questions -->
                     <div class="space-y-2">
                         <label for="num_questions" class="block text-sm font-semibold text-slate-700">Number of Questions</label>
-                        <input type="number" name="num_questions" id="num_questions" value="5" min="1" max="20" required
+                        <input type="number" name="num_questions" id="num_questions" value="10" min="1" max="20" required
                                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all outline-none">
                         <p class="text-[10px] text-slate-400">Max 20 questions per generation</p>
                     </div>
