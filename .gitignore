@@ -19,6 +19,9 @@ env/
 # Database
 instance/
 *.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
 
 # OS
 .DS_Store
