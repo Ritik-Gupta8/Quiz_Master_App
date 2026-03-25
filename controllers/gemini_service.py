@@ -10,7 +10,7 @@ API_KEY = os.environ.get("GOOGLE_API_KEY")
 if API_KEY:
     genai.configure(api_key=API_KEY)
 
-def generate_quiz_questions(subject, chapter, num_questions, level="Medium"):
+def generate_quiz_questions(subject, chapter, num_questions=20, level="Medium", grade="10th"):
     """
     Generates quiz questions using Gemini AI.
     Returns a list of dictionaries, each containing question_statement, 
@@ -22,27 +22,32 @@ def generate_quiz_questions(subject, chapter, num_questions, level="Medium"):
     model = genai.GenerativeModel('gemini-1.5-flash')
     
     prompt = f"""
-    Generate {num_questions} multiple-choice questions for the subject '{subject}' and chapter '{chapter}'.
-    Difficulty level: {level}.
+    Generate exactly {num_questions} multiple-choice questions for Grade {grade} students.
+    Subject: {subject}
+    Topic/Chapter: {chapter}
+    Difficulty level: {level}
     
-    Each question must have:
-    1. A clear question statement.
-    2. Exactly 4 options (option1, option2, option3, option4).
-    3. The correct option identified as 'option1', 'option2', 'option3', or 'option4'.
+    Requirements:
+    1. Each question must have a clear, age-appropriate statement for Grade {grade}.
+    2. Exactly 4 unique options (option1, option2, option3, option4).
+    3. The correct option must be identified as 'option1', 'option2', 'option3', or 'option4'.
     
-    Format the output as a valid JSON list of objects like this:
+    Return ONLY a valid JSON array of objects with the following keys:
+    "question_statement", "option1", "option2", "option3", "option4", "correct_option".
+    
+    Example format:
     [
       {{
-        "question_statement": "...",
-        "option1": "...",
-        "option2": "...",
-        "option3": "...",
-        "option4": "...",
+        "question_statement": "What is the capital of France?",
+        "option1": "Paris",
+        "option2": "London",
+        "option3": "Berlin",
+        "option4": "Madrid",
         "correct_option": "option1"
       }}
     ]
     
-    Provide ONLY the JSON array. No markdown code blocks, no preamble.
+    Do not include any text outside the JSON array.
     """
 
     try:
