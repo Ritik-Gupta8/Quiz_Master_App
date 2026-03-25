@@ -288,6 +288,67 @@ def generate_ai_quiz(name):
     has_api_key = os.environ.get("GOOGLE_API_KEY") is not None
     return render_template("generate_ai_quiz.html", name=name, subjects=subjects, has_api_key=has_api_key)
 
+@app.route("/user_generate_ai_quiz/<uid>/<name>", methods=["POST"])
+def user_generate_ai_quiz(uid, name):
+    user = User.query.get_or_404(uid)
+    grade = request.form.get("grade", "10th")
+    subject_name = request.form.get("subject", "General Knowledge")
+    difficulty = request.form.get("difficulty", "Medium")
+    
+    # Map difficulty to duration
+    duration_map = {"Easy": "00:05", "Medium": "00:10", "High": "00:15"}
+    duration = duration_map.get(difficulty, "00:10")
+    
+    # Find or create subject
+    subject = Subject.query.filter_by(name=subject_name).first()
+    if not subject:
+        subject = Subject(name=subject_name, description=f"AI Generated Subject for {subject_name}")
+        db.session.add(subject)
+        db.session.flush()
+        
+    # Find or create "AI Practice" chapter for this subject
+    chapter = Chapter.query.filter_by(subject_id=subject.id, name="AI Practice").first()
+    if not chapter:
+        chapter = Chapter(name="AI Practice", description="AI Generated Practice Questions", subject_id=subject.id)
+        db.session.add(chapter)
+        db.session.flush()
+        
+    # Generate 20 questions with grade context
+    results = generate_quiz_questions(subject_name, "General Topics", 20, difficulty, grade)
+    
+    if isinstance(results, dict) and "error" in results:
+        # For simplicity in this demo, we'll just flash the error and redirect
+        # In a real app, use Flask Flash messages
+        return redirect(url_for("user_dashboard", uid=uid, name=name))
+        
+    # Create the Quiz
+    new_quiz = Quiz(
+        chapter_id=chapter.id,
+        date_of_quiz=date.today(),
+        no_of_questions=len(results),
+        time_duration=duration
+    )
+    db.session.add(new_quiz)
+    db.session.flush()
+    
+    # Add Questions
+    for q_data in results:
+        new_question = Question(
+            question_statement=q_data.get("question_statement"),
+            question_type="MCQ",
+            quiz_id=new_quiz.id,
+            option1=q_data.get("option1"),
+            option2=q_data.get("option2"),
+            option3=q_data.get("option3"),
+            option4=q_data.get("option4"),
+            correct_option=q_data.get("correct_option")
+        )
+        db.session.add(new_question)
+        
+    db.session.commit()
+    
+    return redirect(url_for("start_quiz", qid=new_quiz.id, uid=user.id, name=name))
+
 @app.route("/search/<name>", methods=["GET", "POST"])
 def search(name):
     if request.method == "POST":
