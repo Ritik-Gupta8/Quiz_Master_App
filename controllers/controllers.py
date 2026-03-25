@@ -241,14 +241,15 @@ def delete_question(id,name):
 def generate_ai_quiz(name):
     if request.method == "POST":
         chapter_id = request.form.get("chapter_id")
-        num_questions = int(request.form.get("num_questions", 5))
+        num_questions = int(request.form.get("num_questions", 10))
         level = request.form.get("level", "Medium")
+        grade = request.form.get("grade", "10th")
         
         chapter = Chapter.query.get_or_404(chapter_id)
         subject = chapter.subject
         
         # Call Gemini AI
-        results = generate_quiz_questions(subject.name, chapter.name, num_questions, level)
+        results = generate_quiz_questions(subject.name, chapter.name, num_questions, level, grade)
         
         if isinstance(results, dict) and "error" in results:
             subjects = Subject.query.all()
