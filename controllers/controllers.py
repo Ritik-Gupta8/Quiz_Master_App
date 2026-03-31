@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,url_for,redirect, session
+from flask import Flask,render_template,request,url_for,redirect, session, flash
 from models.models import *
 from flask import current_app as app
 from datetime import datetime,date,timedelta,timezone
@@ -318,8 +318,7 @@ def user_generate_ai_quiz(uid, name):
     results = generate_quiz_questions(subject_name, "General Topics", 20, difficulty, grade)
     
     if isinstance(results, dict) and "error" in results:
-        # For simplicity in this demo, we'll just flash the error and redirect
-        # In a real app, use Flask Flash messages
+        flash(f"AI Generation Failed: {results['error']}", "error")
         return redirect(url_for("user_dashboard", uid=uid, name=name))
         
     # Create the Quiz
