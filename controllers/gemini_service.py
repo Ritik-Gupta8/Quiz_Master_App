@@ -8,58 +8,54 @@ def get_api_key():
     return os.environ.get("GOOGLE_API_KEY")
 
 def generate_quiz_questions(subject, chapter, num_questions=20, level="Medium", grade="10th"):
-    """
-    Generates quiz questions using Gemini AI.
-    Returns a list of dictionaries, each containing question_statement, 
-    option1, option2, option3, option4, and correct_option.
+    """Generate quiz questions using Gemini AI.
+    Returns a list of dictionaries with keys:
+    question_statement, option1, option2, option3, option4, correct_option.
     """
     api_key = get_api_key()
     if not api_key:
         return {"error": "Google API Key (GOOGLE_API_KEY) was not found in your environment. Please ensure your .env file is correctly configured."}
 
-    try:
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
-    
+    # Configure the Gemini client
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+
     prompt = f"""
     Generate exactly {num_questions} multiple-choice questions for Grade {grade} students.
     Subject: {subject}
     Topic/Chapter: {chapter}
     Difficulty level: {level}
-    
+
     Requirements:
     1. Each question must have a clear, age-appropriate statement for Grade {grade}.
     2. Exactly 4 unique options (option1, option2, option3, option4).
     3. The correct option must be identified as 'option1', 'option2', 'option3', or 'option4'.
-    
+
     Return ONLY a valid JSON array of objects with the following keys:
     "question_statement", "option1", "option2", "option3", "option4", "correct_option".
-    
+
     Example format:
     [
-      {{
+      {
         "question_statement": "What is the capital of France?",
         "option1": "Paris",
         "option2": "London",
         "option3": "Berlin",
         "option4": "Madrid",
         "correct_option": "option1"
-      }}
+      }
     ]
-    
+
     Do not include any text outside the JSON array.
     """
-
     try:
         response = model.generate_content(prompt)
         content = response.text.strip()
-        
-        # Clean up potential markdown code blocks if the AI ignored the "ONLY JSON" instruction
+        # Remove possible markdown fences
         if content.startswith("```json"):
             content = content[7:-3].strip()
         elif content.startswith("```"):
             content = content[3:-3].strip()
-            
         questions = json.loads(content)
         return questions
     except Exception as e:
