@@ -252,10 +252,8 @@ def generate_ai_quiz(name):
         results = generate_quiz_questions(subject.name, chapter.name, num_questions, level, grade)
         
         if isinstance(results, dict) and "error" in results:
-            subjects = Subject.query.all()
-            return render_template("generate_ai_quiz.html", name=name, subjects=subjects, 
-                                 has_api_key=os.environ.get("GOOGLE_API_KEY") is not None,
-                                 error=results["error"])
+            flash(f"AI Generation Failed: {results['error']}", "error")
+            return redirect(url_for("generate_ai_quiz", name=name))
         
         # Create a new Quiz for this generation
         # Defaulting date to today and duration to 30 mins
