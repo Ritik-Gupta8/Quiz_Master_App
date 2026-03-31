@@ -20,5 +20,6 @@ setup_app()
 
 from controllers.controllers import *
 
+# AI Generation system is now configured and ready for local use
 if __name__ == "__main__":
     app.run(debug=True)
