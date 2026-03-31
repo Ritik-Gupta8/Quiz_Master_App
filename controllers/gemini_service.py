@@ -4,11 +4,8 @@ import json
 import re
 
 # Configure Gemini API
-# In a real production app, this should be fetched from environment variables
-# For now, we'll anticipate GOOGLE_API_KEY being set in the environment
-API_KEY = os.environ.get("GOOGLE_API_KEY")
-if API_KEY:
-    genai.configure(api_key=API_KEY)
+def get_api_key():
+    return os.environ.get("GOOGLE_API_KEY")
 
 def generate_quiz_questions(subject, chapter, num_questions=20, level="Medium", grade="10th"):
     """
@@ -16,10 +13,13 @@ def generate_quiz_questions(subject, chapter, num_questions=20, level="Medium", 
     Returns a list of dictionaries, each containing question_statement, 
     option1, option2, option3, option4, and correct_option.
     """
-    if not API_KEY:
-        return {"error": "Google API Key not configured. Please set GOOGLE_API_KEY environment variable."}
+    api_key = get_api_key()
+    if not api_key:
+        return {"error": "Google API Key (GOOGLE_API_KEY) was not found in your environment. Please ensure your .env file is correctly configured."}
 
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-1.5-flash')
     
     prompt = f"""
     Generate exactly {num_questions} multiple-choice questions for Grade {grade} students.
