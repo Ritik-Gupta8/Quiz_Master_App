@@ -313,7 +313,7 @@ def user_generate_ai_quiz(uid, name):
         db.session.flush()
         
     # Generate 20 questions with grade context
-    results = generate_quiz_questions(subject_name, "General Topics", 20, difficulty, grade)
+    results = generate_quiz_questions(subject_name, "General Topics", 10, difficulty, grade)
     
     if isinstance(results, dict) and "error" in results:
         flash(f"AI Generation Failed: {results['error']}", "error")
