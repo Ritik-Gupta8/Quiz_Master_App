@@ -1,7 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 db = SQLAlchemy()
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
@@ -41,6 +42,7 @@ class Quiz(db.Model):
     date_of_quiz = db.Column(db.Date, nullable=False)
     time_duration = db.Column(db.String(50), nullable=False)
     no_of_questions = db.Column(db.Integer, nullable=False) 
+    difficulty = db.Column(db.String(20), default="Medium")
 
     questions = db.relationship("Question", cascade="all,delete", backref="quiz", lazy=True)
     scores = db.relationship("Score", cascade="all,delete", backref="quiz", lazy=True)
@@ -67,4 +69,17 @@ class Score(db.Model):
     total_score = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f"<Score {self.id}: user={self.user_id}, quiz={self.quiz_id}, score={self.total_score}>"
+        return f"<Score {self.id}: user={self.user_id}, quiz={self.quiz_id}, score={self.total_score}>"
+
+class QuizAttempt(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey("quiz.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    status = db.Column(db.String(20), default="in_progress") # in_progress, submitted, expired
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+    answers = db.Column(db.Text, default="{}") # JSON string of answers
+    final_score = db.Column(db.Integer, nullable=True)
+
+    def __repr__(self):
+        return f"<QuizAttempt {self.id}: user={self.user_id}, quiz={self.quiz_id}, status={self.status}>"
