@@ -7,14 +7,17 @@ dist/
 build/
 *.egg
 
+
 # Virtual Environment
 venv/
 env/
 .env
 
+
 # IDE
 .vscode/
 .idea/
+
 
 # Database
 instance/
@@ -23,12 +26,15 @@ instance/
 *.db-shm
 *.db-wal
 
+
 # OS
 .DS_Store
 Thumbs.db
 
+
 # Flask
 *.log
+
 
 # Generated images (runtime artifacts)
 static/images/admin_summary.jpeg
