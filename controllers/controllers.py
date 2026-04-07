@@ -53,14 +53,18 @@ def signin():
         pwd=request.form.get("password")
 
         usr=User.query.filter_by(email=uname).first()
-        if usr and check_password_hash(usr.password, pwd):
+        if not usr:
+            flash("User not found. Please check your email or register a new account.", "danger")
+            return render_template("login.html")
+            
+        if check_password_hash(usr.password, pwd):
             login_user(usr)
             if usr.role==0:
                 return redirect(url_for("admin_dashboard"))
             elif usr.role==1:
                 return redirect(url_for("user_dashboard")) 
         else:
-            flash("Invalid email or password. Please try again.", "danger")
+            flash("Incorrect password. Please try again.", "danger")
             return render_template("login.html")
 
     return render_template("login.html")
@@ -111,19 +115,7 @@ def add_subject():
 
     return render_template("add_subject.html")
 
-@app.route("/chapter/<subject_id>",methods=["POST","GET"])
-@role_required("admin")
-def add_chapter(subject_id):
-    if request.method=="POST":
-        cname=request.form.get("name")
-        description=request.form.get("description")
- 
-        new_chapter=Chapter(name=cname, description=description,subject_id=subject_id)
-        db.session.add(new_chapter)
-        db.session.commit()
-        return redirect(url_for("admin_dashboard"))
 
-    return render_template("add_chapter.html",subject_id=subject_id)
 
 @app.route("/edit_subject/<id>",methods=["GET","POST"])
 @role_required("admin")
@@ -148,29 +140,7 @@ def delete_subject(id):
         db.session.commit()
     return redirect(url_for("admin_dashboard"))
 
-@app.route("/edit_chapter/<id>",methods=["GET","POST"])
-@role_required("admin")
-def edit_chapter(id):
-    c=get_chapter(id)
 
-    if request.method=="POST":
-        cname=request.form.get("cname")
-        description=request.form.get("description")
-        c.name=cname
-        c.description=description
-        db.session.commit()
-        return redirect(url_for("admin_dashboard"))
-    
-    return render_template("edit_chapter.html",chapter=c)
-
-@app.route("/delete_chapter/<id>",methods=["GET","POST"])
-@role_required("admin")
-def delete_chapter(id):
-    c=get_chapter(id)
-    if c:
-        db.session.delete(c)
-        db.session.commit()
-    return redirect(url_for("admin_dashboard"))
 
 @app.route("/quiz_management")
 @role_required("admin")
@@ -178,24 +148,25 @@ def quiz_management():
     quizzes = Quiz.query.all()
     return render_template("quiz_management.html", quizzes=quizzes)
 
-@app.route("/add_quiz/<chapter_id>", methods=["POST", "GET"])
+@app.route("/add_quiz/<subject_id>", methods=["POST", "GET"])
 @role_required("admin")
-def add_quiz(chapter_id):
+def add_quiz(subject_id):
     if request.method == "POST":
+        topic = request.form.get("topic", "General Topic")
         date_of_quiz = request.form.get("date_of_quiz")
         time_duration = request.form.get("time_duration")
         no_of_questions = request.form.get("no_of_questions")
         difficulty = request.form.get("difficulty", "Medium")
         date = datetime.strptime(date_of_quiz, "%Y-%m-%d").date()
 
-        new_quiz = Quiz(chapter_id=chapter_id, date_of_quiz=date, no_of_questions=no_of_questions, time_duration=time_duration, difficulty=difficulty)
+        new_quiz = Quiz(subject_id=subject_id, topic=topic, date_of_quiz=date, no_of_questions=no_of_questions, time_duration=time_duration, difficulty=difficulty)
         db.session.add(new_quiz)
         db.session.commit()
         return redirect(url_for("quiz_management"))
 
-    chapters = Chapter.query.all()
-    chapter = Chapter.query.get_or_404(chapter_id)
-    return render_template("add_quiz.html", chapters=chapters, selected_chapter_id=chapter_id, selected_chapter_name=chapter.name)
+    subjects = Subject.query.all()
+    subject = Subject.query.get_or_404(subject_id)
+    return render_template("add_quiz.html", subjects=subjects, selected_subject_id=subject_id, selected_subject_name=subject.name)
 
 @app.route("/edit_quiz/<id>",methods=["GET","POST"])
 @role_required("admin")
@@ -203,12 +174,14 @@ def edit_quiz(id):
     q=get_quiz(id)
    
     if request.method=="POST":
-        cid = request.form.get("chapter_id")
+        sid = request.form.get("subject_id")
+        topic = request.form.get("topic", "General Topic")
         date_of_quiz = request.form.get("date_of_quiz")
         date = datetime.strptime(date_of_quiz, "%Y-%m-%d").date()
         time_duration = request.form.get("time_duration")
         no_of_questions = request.form.get("no_of_questions")
-        q.chapter_id=cid
+        q.subject_id=sid
+        q.topic=topic
         q.date_of_quiz=date
         q.time_duration=time_duration
         q.no_of_questions=no_of_questions
@@ -216,8 +189,8 @@ def edit_quiz(id):
         db.session.commit()
         return redirect(url_for("quiz_management"))
     
-    chapters = Chapter.query.all()
-    return render_template("edit_quiz.html",quiz=q,chapters=chapters)
+    subjects = Subject.query.all()
+    return render_template("edit_quiz.html",quiz=q,subjects=subjects)
 
 @app.route("/delete_quiz/<id>", methods=["GET", "POST"])
 @role_required("admin")
@@ -228,73 +201,23 @@ def delete_quiz(id):
         db.session.commit()
     return redirect(url_for("quiz_management"))
 
-@app.route("/add_question/<quiz_id>", methods=["POST", "GET"])
-@role_required("admin")
-def add_question(quiz_id):
-    if request.method=="POST":
-        question=request.form.get("question_statement")
-        type=request.form.get("question_type")
-        option1=request.form.get("option1")
-        option2=request.form.get("option2")
-        option3=request.form.get("option3")
-        option4=request.form.get("option4")
-        correct_option=request.form.get("correct_option")
 
-        new_question=Question(question_statement=question,question_type=type,quiz_id=quiz_id,option1=option1,option2=option2,option3=option3,option4=option4,correct_option=correct_option)
-        db.session.add(new_question)
-        db.session.commit()
-        return redirect(url_for("quiz_management"))
-    
-    return render_template("add_question.html", quiz_id=quiz_id)
-
-@app.route("/edit_question/<id>",methods=["GET","POST"])
-@role_required("admin")
-def edit_question(id):
-    q=get_question(id)
-
-    if request.method=="POST":
-        question=request.form.get("question_statement")
-        type=request.form.get("question_type")
-        option1=request.form.get("option1")
-        option2=request.form.get("option2")
-        option3=request.form.get("option3")
-        option4=request.form.get("option4")
-        correct_option=request.form.get("correct_option")
-        q.question_statement=question
-        q.question_type=type
-        q.option1=option1
-        q.option2=option2
-        q.option3=option3
-        q.option4=option4
-        q.correct_option=correct_option
-        db.session.commit()
-        return redirect(url_for("quiz_management"))
-    
-    return render_template("edit_question.html",question=q)
-
-@app.route("/delete_question/<id>",methods=["GET","POST"])
-@role_required("admin")
-def delete_question(id):
-    q=get_question(id)
-    if q:
-        db.session.delete(q)
-        db.session.commit()
-    return redirect(url_for("quiz_management"))
 
 @app.route("/generate_ai_quiz", methods=["GET", "POST"])
 @role_required("admin")
 def generate_ai_quiz():
     if request.method == "POST":
-        chapter_id = request.form.get("chapter_id")
+        subject_id = request.form.get("subject_id")
+        topic = request.form.get("topic", "General Topic")
         num_questions = int(request.form.get("num_questions", 10))
         level = request.form.get("level", "Medium")
         grade = request.form.get("grade", "10th")
+        time_duration = request.form.get("time_duration")
         
-        chapter = Chapter.query.get_or_404(chapter_id)
-        subject = chapter.subject
+        subject = Subject.query.get_or_404(subject_id)
         
         # Call Gemini AI
-        results = generate_quiz_questions(subject.name, chapter.name, num_questions, level, grade)
+        results = generate_quiz_questions(subject.name, topic, num_questions, level, grade)
         
         if isinstance(results, dict) and "error" in results:
             flash(f"AI Generation Failed: {results['error']}", "error")
@@ -302,10 +225,11 @@ def generate_ai_quiz():
         
         # Create a new Quiz for this generation
         new_quiz = Quiz(
-            chapter_id=chapter_id, 
+            subject_id=subject_id, 
+            topic=topic,
             date_of_quiz=date.today(), 
             no_of_questions=len(results), 
-            time_duration="00:30",
+            time_duration=time_duration,
             difficulty=level
         )
         db.session.add(new_quiz)
@@ -344,21 +268,16 @@ def user_generate_ai_quiz():
     duration = duration_map.get(difficulty, "00:10")
     
     # Find or create subject
-    subject = Subject.query.filter_by(name=subject_name).first()
+    subject = Subject.query.filter(Subject.name.ilike(subject_name)).first()
     if not subject:
         subject = Subject(name=subject_name, description=f"AI Generated Subject for {subject_name}")
         db.session.add(subject)
         db.session.flush()
         
-    # Find or create "AI Practice" chapter for this subject
-    chapter = Chapter.query.filter_by(subject_id=subject.id, name="AI Practice").first()
-    if not chapter:
-        chapter = Chapter(name="AI Practice", description="AI Generated Practice Questions", subject_id=subject.id)
-        db.session.add(chapter)
-        db.session.flush()
-        
+    topic = f"AI Practice ({grade} Grade)"
+
     # Generate 20 questions with grade context
-    results = generate_quiz_questions(subject_name, "General Topics", 10, difficulty, grade)
+    results = generate_quiz_questions(subject.name, "General Topics", 10, difficulty, grade)
     
     if isinstance(results, dict) and "error" in results:
         flash(f"AI Generation Failed: {results['error']}", "error")
@@ -366,7 +285,8 @@ def user_generate_ai_quiz():
         
     # Create the Quiz
     new_quiz = Quiz(
-        chapter_id=chapter.id,
+        subject_id=subject.id,
+        topic=topic,
         date_of_quiz=date.today(),
         no_of_questions=len(results),
         time_duration=duration,
@@ -420,7 +340,7 @@ def search_by_subject(search_txt):
     return subjects
 
 def search_by_quiz(search_txt):
-    quizzes = Quiz.query.join(Chapter).filter(Chapter.name.ilike(f"%{search_txt}%")).all()
+    quizzes = Quiz.query.join(Subject).filter(Subject.name.ilike(f"%{search_txt}%")).all()
     return quizzes
 
 @app.route("/admin_summary")
@@ -442,8 +362,7 @@ def admin_summary():
         # Calculate average percentage score for this subject
         avg = db.session.query(func.avg(Score.total_score * 100.0 / Quiz.no_of_questions))\
             .join(Quiz, Score.quiz_id == Quiz.id)\
-            .join(Chapter, Quiz.chapter_id == Chapter.id)\
-            .filter(Chapter.subject_id == s.id).scalar() or 0
+            .filter(Quiz.subject_id == s.id).scalar() or 0
         subject_performance.append({"name": s.name, "value": round(float(avg), 2)})
     
     # 5. Difficulty-wise Performance
@@ -625,7 +544,7 @@ def user_summary():
     quiz_history = []
     for a in recent_attempts:
         quiz_history.append({
-            "quiz": a.quiz.chapter.name,
+            "quiz": a.quiz.topic,
             "score": a.final_score,
             "total": a.quiz.no_of_questions
         })
@@ -647,8 +566,7 @@ def user_summary():
     for s in subjects:
         avg = db.session.query(func.avg(QuizAttempt.final_score * 100.0 / Quiz.no_of_questions))\
             .join(Quiz, QuizAttempt.quiz_id == Quiz.id)\
-            .join(Chapter, Quiz.chapter_id == Chapter.id)\
-            .filter(QuizAttempt.user_id == user_id, Chapter.subject_id == s.id, QuizAttempt.status == "submitted").scalar() or 0
+            .filter(QuizAttempt.user_id == user_id, Quiz.subject_id == s.id, QuizAttempt.status == "submitted").scalar() or 0
         subject_scores.append({"name": s.name, "value": round(float(avg), 2)})
         
     # 4. Time Spent (Average in minutes per attempt)
@@ -656,7 +574,7 @@ def user_summary():
     for a in trend_attempts:
         duration = (a.end_time - a.start_time).total_seconds() / 60.0
         time_data.append({
-            "quiz": a.quiz.chapter.name,
+            "quiz": a.quiz.topic,
             "minutes": round(duration, 2)
         })
 
@@ -677,14 +595,10 @@ def get_subject(id):
     subject=Subject.query.filter_by(id=id).first()
     return subject
 
-def get_chapter(id):
-    chapter=Chapter.query.filter_by(id=id).first()
-    return chapter
+
 
 def get_quiz(id):
     quiz=Quiz.query.filter_by(id=id).first()
     return quiz
 
-def get_question(id):
-    question=Question.query.filter_by(id=id).first()
-    return question
+
