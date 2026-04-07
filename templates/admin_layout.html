@@ -33,10 +33,10 @@
                         </span>
                     </div>
                     <div class="hidden sm:flex sm:space-x-4">
-                        <a href="/admin/{{name}}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Dashboard</a>
-                        <a href="/quiz_management/{{name}}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Quizzes</a>
-                        <a href="/admin_summary/{{name}}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Summary</a>
-                        <a href="/user_details/{{name}}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Users</a>
+                        <a href="{{ url_for('admin_dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Dashboard</a>
+                        <a href="{{ url_for('quiz_management') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Quizzes</a>
+                        <a href="{{ url_for('admin_summary') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Summary</a>
+                        <a href="{{ url_for('user_deatils') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Users</a>
                     </div>
                 </div>
                 <div class="flex items-center sm:hidden">
@@ -45,7 +45,7 @@
                     </button>
                 </div>
                 <div class="hidden sm:flex items-center text-sm font-medium text-slate-600 space-x-4">
-                    <span class="hidden lg:inline">Welcome, <span class="text-indigo-600 font-semibold">{{name}}</span></span>
+                    <span class="hidden lg:inline">Welcome, <span class="text-indigo-600 font-semibold">{{ current_user.full_name }}</span></span>
                     <a href="/logout" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all">
                         Logout
                     </a>
@@ -55,11 +55,11 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden sm:hidden border-t border-slate-200 bg-white/95 backdrop-blur-md">
             <div class="pt-2 pb-3 space-y-1 px-4">
-                <a href="/admin/{{name}}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Dashboard</a>
-                <a href="/quiz_management/{{name}}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Quizzes</a>
-                <a href="/admin_summary/{{name}}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Summary</a>
-                <a href="/user_details/{{name}}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Users</a>
-                <a href="/logout" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</a>
+                <a href="{{ url_for('admin_dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Dashboard</a>
+                <a href="{{ url_for('quiz_management') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Quizzes</a>
+                <a href="{{ url_for('admin_summary') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Summary</a>
+                <a href="{{ url_for('user_deatils') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Users</a>
+                <a href="{{ url_for('logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</a>
             </div>
         </div>
     </nav>
