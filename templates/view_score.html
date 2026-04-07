@@ -7,7 +7,10 @@
             <p class="text-slate-500 mt-1">Review your past performance and growth.</p>
         </div>
         <div class="h-12 w-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
         </div>
     </div>
 
@@ -17,10 +20,14 @@
             <table class="min-w-full divide-y divide-slate-100">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Topic & Chapter</th>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Attempt Date</th>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Score</th>
-                        <th class="px-6 py-4 text-right font-bold text-slate-500 uppercase tracking-wider text-[10px]">Status</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                            Topic & Chapter</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                            Attempt Date</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                            Score</th>
+                        <th class="px-6 py-4 text-right font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                            Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -30,8 +37,8 @@
                     <tr class="hover:bg-slate-50 transition-colors group">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex flex-col">
-                                <span class="text-xs font-bold text-indigo-600 uppercase">{{ quiz.chapter.subject.name }}</span>
-                                <span class="text-sm font-bold text-slate-900">{{ quiz.chapter.name }}</span>
+                                <span class="text-xs font-bold text-indigo-600 uppercase">{{ quiz.subject.name }}</span>
+                                <span class="text-sm font-bold text-slate-900">{{ quiz.name }}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
@@ -47,11 +54,14 @@
                         <td class="px-6 py-4 whitespace-nowrap text-right">
                             {% set percentage = (score.total_score / quiz.no_of_questions * 100) | round | int %}
                             {% if percentage >= 80 %}
-                            <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">Excellence</span>
+                            <span
+                                class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">Excellence</span>
                             {% elif percentage >= 50 %}
-                            <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">Passed</span>
+                            <span
+                                class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">Passed</span>
                             {% else %}
-                            <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Developing</span>
+                            <span
+                                class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Developing</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -64,11 +74,16 @@
     {% else %}
     <div class="bg-white rounded-3xl p-16 text-center border-2 border-dashed border-slate-200">
         <div class="mx-auto h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
-             <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
         </div>
         <h3 class="text-xl font-bold text-slate-900">No History Available</h3>
-        <p class="text-slate-500 mt-2 max-w-sm mx-auto">You haven't attempted any quizzes yet. Your scores will appear here once you finish your first quiz!</p>
-        <a href="/user/{{ name }}" class="mt-8 inline-flex items-center px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+        <p class="text-slate-500 mt-2 max-w-sm mx-auto">You haven't attempted any quizzes yet. Your scores will appear
+            here once you finish your first quiz!</p>
+        <a href="{{ url_for('user_dashboard') }}"
+            class="mt-8 inline-flex items-center px-8 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
             Take Your First Quiz
         </a>
     </div>
