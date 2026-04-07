@@ -54,6 +54,28 @@
                 <p class="text-sm text-slate-600">
                     New here? <a href="/register" class="font-bold text-indigo-600 hover:text-indigo-500">Create an account</a>
                 </p>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    <div class="mt-4 space-y-2">
+                    {% for category, message in messages %}
+                      {% if category == 'danger' or category == 'error' %}
+                        <div class="p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">
+                            {{ message }}
+                        </div>
+                      {% elif category == 'success' %}
+                        <div class="p-3 rounded-lg bg-emerald-50 text-emerald-600 text-sm font-medium border border-emerald-100">
+                            {{ message }}
+                        </div>
+                      {% else %}
+                        <div class="p-3 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-medium border border-indigo-100">
+                            {{ message }}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                    </div>
+                  {% endif %}
+                {% endwith %}
+                
                 {% if msg %}
                 <div class="mt-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">
                     {{msg}}
