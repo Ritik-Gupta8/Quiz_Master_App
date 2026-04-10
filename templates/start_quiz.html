@@ -1,59 +1,86 @@
 {% extends "user_layout.html" %}
 {% block content %}
-<div class="fixed inset-0 bg-slate-50 -z-10 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div
+    class="fixed inset-0 bg-slate-50 -z-10 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+</div>
 
 <div class="max-w-4xl mx-auto space-y-8 pb-32 pt-10">
     <!-- Sticky Quiz Header -->
-    <div class="sticky top-4 z-30 bg-white/90 backdrop-blur-md rounded-3xl border border-indigo-100 shadow-2xl px-8 py-6 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
+    <div
+        class="sticky top-4 z-30 bg-white/90 backdrop-blur-md rounded-3xl border border-indigo-100 shadow-2xl px-8 py-6 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden">
         <!-- Progress Bar Background -->
         <div class="absolute bottom-0 left-0 h-1 bg-indigo-100 w-full">
-            <div id="progress-bar" class="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-1000" style="width: 100%;"></div>
+            <div id="progress-bar"
+                class="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-1000"
+                style="width: 100%;"></div>
         </div>
-        
+
         <div class="flex items-center space-x-4">
-            <div class="h-12 w-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            <div
+                class="h-12 w-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
             </div>
             <div>
-                <span class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">{{ quiz.chapter.subject.name }}</span>
-                <h2 class="text-2xl font-black text-slate-900 leading-tight uppercase tracking-tight">{{ quiz.chapter.name }}</h2>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">{{ quiz.subject.name }}</span>
+                    <span class="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Attempt {{ attempt_num }}/{{ max_attempts }}</span>
+                </div>
+                <h2 class="text-2xl font-black text-slate-900 leading-tight uppercase tracking-tight">{{ quiz.topic }}
+                </h2>
             </div>
         </div>
 
         <div class="flex items-center space-x-8">
             <div class="text-right">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Time Remaining</p>
-                <div id="timer-container" class="flex items-center space-x-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
-                    <p id="timer" class="text-2xl font-black text-indigo-600 tabular-nums font-mono leading-none">00:00</p>
-                    <svg id="timer-icon" class="h-6 w-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div id="timer-container"
+                    class="flex items-center space-x-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
+                    <p id="timer" class="text-2xl font-black text-indigo-600 tabular-nums font-mono leading-none">00:00
+                    </p>
+                    <svg id="timer-icon" class="h-6 w-6 text-indigo-500" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                 </div>
             </div>
-            <button type="button" onclick="confirmEndQuiz()" class="px-5 py-3 border-2 border-slate-200 text-slate-500 font-bold rounded-2xl hover:bg-slate-50 hover:border-slate-300 transition-all text-sm">
+            <button type="button" onclick="confirmEndQuiz()"
+                class="px-5 py-3 border-2 border-slate-200 text-slate-500 font-bold rounded-2xl hover:bg-slate-50 hover:border-slate-300 transition-all text-sm">
                 End Quiz
             </button>
         </div>
     </div>
 
     <!-- Quiz Content -->
-    <form id="quiz-form" action="/submit_quiz/{{quiz.id}}/{{user.id}}/{{name}}" method="POST" class="space-y-8">
+    <form id="quiz-form" action="{{ url_for('submit_quiz', qid=quiz.id) }}" method="POST" class="space-y-8">
         {% for question in questions %}
-        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden transform transition-all hover:shadow-2xl">
+        <div
+            class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden transform transition-all hover:shadow-2xl">
             <div class="p-10 space-y-8">
                 <div class="flex items-start gap-6">
-                    <span class="flex-shrink-0 h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-lg font-black text-indigo-600 shadow-inner">
+                    <span
+                        class="flex-shrink-0 h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-lg font-black text-indigo-600 shadow-inner">
                         {{ loop.index }}
                     </span>
-                    <h5 class="text-xl font-bold text-slate-800 pt-1.5 leading-relaxed">{{ question.question_statement }}</h5>
+                    <h5 class="text-xl font-bold text-slate-800 pt-1.5 leading-relaxed">{{ question.question_statement
+                        }}</h5>
                 </div>
-                
+
                 <input type="hidden" name="question_{{ question.id }}" value="{{ question.id }}">
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pl-0 md:pl-16">
                     {% for option in [question.option1, question.option2, question.option3, question.option4] %}
-                    <label class="relative flex items-center p-5 rounded-2xl border-2 border-slate-50 bg-slate-50/50 hover:border-indigo-500 hover:bg-white cursor-pointer transition-all group shadow-sm hover:shadow-lg">
-                        <input type="radio" name="answer_{{ question.id }}" value="{{ option }}" required
-                               class="h-6 w-6 text-indigo-600 border-slate-300 focus:ring-offset-2 focus:ring-indigo-500 transition-all cursor-pointer">
-                        <span class="ml-4 text-slate-700 font-bold group-hover:text-indigo-900 transition-colors">{{ option }}</span>
+                    <label
+                        class="relative flex items-center p-5 rounded-2xl border-2 border-slate-50 bg-slate-50/50 hover:border-indigo-500 hover:bg-white cursor-pointer transition-all group shadow-sm hover:shadow-lg">
+                        <input type="radio" name="answer_{{ question.id }}" value="{{ option }}" required {% if
+                            current_answers.get(question.id|string)==option %}checked{% endif %}
+                            onchange="saveProgress('{{ question.id }}', '{{ option }}')"
+                            class="h-6 w-6 text-indigo-600 border-slate-300 focus:ring-offset-2 focus:ring-indigo-500 transition-all cursor-pointer">
+                        <span class="ml-4 text-slate-700 font-bold group-hover:text-indigo-900 transition-colors">{{
+                            option }}</span>
                     </label>
                     {% endfor %}
                 </div>
@@ -62,8 +89,12 @@
         {% endfor %}
 
         <div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 z-40">
-            <button type="submit" class="w-full py-5 bg-indigo-600 text-white text-xl font-black rounded-3xl shadow-2xl shadow-indigo-300 hover:bg-indigo-700 hover:-translate-y-2 transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center space-x-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <button type="submit"
+                class="w-full py-5 bg-indigo-600 text-white text-xl font-black rounded-3xl shadow-2xl shadow-indigo-300 hover:bg-indigo-700 hover:-translate-y-2 transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center space-x-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 <span>Submit All Answers</span>
             </button>
         </div>
@@ -71,11 +102,49 @@
 </div>
 
 <script>
-    let totalTime = 0;
-    let initialDistance = 0;
+    // Navigation Protection
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.pushState(null, null, location.href);
+        alert("Back navigation is disabled during the quiz. Please use the 'End Quiz' button if you wish to leave.");
+    };
+
+    window.onbeforeunload = function () {
+        return "Are you sure you want to leave? Your progress is saved, but the timer will continue to run.";
+    };
+
+    // Remove warning on form submit
+    document.getElementById('quiz-form').onsubmit = function () {
+        window.onbeforeunload = null;
+    };
+
+    function saveProgress(questionId, selectedOption) {
+        fetch("{{ url_for('save_answer', qid=quiz.id) }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                question_id: questionId,
+                selected_option: selectedOption
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error("Failed to save progress:", data.error);
+                    if (data.error === "Quiz time has expired") {
+                        window.onbeforeunload = null;
+                        location.reload(); // Redirects to score via controller check
+                    }
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    }
 
     function confirmEndQuiz() {
         if (confirm("Are you sure you want to end the quiz now? Your progress will be saved.")) {
+            window.onbeforeunload = null;
             document.getElementById('quiz-form').submit();
         }
     }
@@ -85,9 +154,9 @@
         let progressBar = document.getElementById("progress-bar");
         let timerIcon = document.getElementById("timer-icon");
         let timerContainer = document.getElementById("timer-container");
-        
+
         let countDownDate = new Date(endTime).getTime();
-        
+
         // Setup initial distance for progress bar
         let start = new Date().getTime();
         initialDistance = countDownDate - start;
@@ -100,21 +169,22 @@
                 clearInterval(x);
                 timerElement.innerHTML = "00:00";
                 progressBar.style.width = "0%";
+                window.onbeforeunload = null;
                 document.getElementById('quiz-form').submit();
                 return;
             }
 
             let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            
-            timerElement.innerHTML = 
-                (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+
+            timerElement.innerHTML =
+                (minutes < 10 ? "0" + minutes : minutes) + ":" +
                 (seconds < 10 ? "0" + seconds : seconds);
-                
+
             // Progress Bar
             let progress = (distance / initialDistance) * 100;
             progressBar.style.width = progress + "%";
-                
+
             // Visual warning when time is low (under 1 minute)
             if (distance < 60000) {
                 timerElement.classList.remove('text-indigo-600');
@@ -126,7 +196,7 @@
             }
         }, 1000);
     }
-    
+
     // Parse the ISO string to handle timezone correctly
     startTimer("{{ end_time }}");
 </script>
