@@ -6,6 +6,11 @@
             <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Curriculum Management</h2>
             <p class="text-slate-500 mt-1">Manage subjects and their associated quizzes.</p>
         </div>
+        <a href="{{ url_for('add_subject') }}"
+            class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all text-sm">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Subject
+        </a>
     </div>
 
     {% if subjects %}
@@ -18,10 +23,16 @@
                     <a href="{{ url_for('edit_subject', id=subject.id) }}"
                         class="hover:text-indigo-600 transition-colors">{{ subject.name }}</a>
                 </h3>
-                <span
-                    class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
-                    {{ subject.quizzes|length }} Quizzes
-                </span>
+                <div class="flex items-center gap-3">
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
+                        {{ subject.quizzes|length }} Quizzes
+                    </span>
+                    <a href="{{ url_for('delete_subject', id=subject.id) }}"
+                        onclick="return confirm('Delete subject and ALL its quizzes?')"
+                        class="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete Subject">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </a>
+                </div>
             </div>
 
             <div class="p-6">
@@ -30,23 +41,35 @@
                     <table class="min-w-full divide-y divide-slate-100 text-sm">
                         <thead class="bg-slate-50">
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-slate-600 uppercase tracking-wider">
-                                    Topic</th>
-                                <th class="px-4 py-3 text-right font-semibold text-slate-600 uppercase tracking-wider">
-                                    Actions</th>
+                                <th class="px-4 py-3 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Topic</th>
+                                <th class="px-4 py-3 text-center font-bold text-slate-500 uppercase tracking-wider text-[10px]">Difficulty</th>
+                                <th class="px-4 py-3 text-center font-bold text-slate-500 uppercase tracking-wider text-[10px]">Qs</th>
+                                <th class="px-4 py-3 text-center font-bold text-slate-500 uppercase tracking-wider text-[10px]">Duration</th>
+                                <th class="px-4 py-3 text-right font-bold text-slate-500 uppercase tracking-wider text-[10px]">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             {% for quiz in subject.quizzes %}
                             <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-4 py-3 text-slate-700">{{ quiz.topic }}</td>
-                                <td class="px-4 py-3 text-right space-x-2">
+                                <td class="px-4 py-3 text-slate-700 font-medium max-w-[140px] truncate">{{ quiz.topic }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    {% if quiz.difficulty == 'Easy' %}
+                                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700">Easy</span>
+                                    {% elif quiz.difficulty == 'Medium' %}
+                                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700">Medium</span>
+                                    {% else %}
+                                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-100 text-red-700">{{ quiz.difficulty }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3 text-center font-bold text-slate-700 text-xs">{{ quiz.no_of_questions }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600 font-mono text-xs">{{ quiz.time_duration }}</td>
+                                <td class="px-4 py-3 text-right space-x-2 whitespace-nowrap">
                                     <a href="{{ url_for('edit_quiz', id=quiz.id) }}"
-                                        class="text-slate-600 hover:text-slate-900">Edit</a>
+                                        class="text-slate-500 hover:text-indigo-600 text-xs font-semibold transition-colors">Edit</a>
                                     <span class="text-slate-300">|</span>
                                     <a href="{{ url_for('delete_quiz', id=quiz.id) }}"
-                                        onclick="return confirm('Are you sure?')"
-                                        class="text-red-600 hover:text-red-500">Delete</a>
+                                        onclick="return confirm('Delete this quiz and all its questions?')"
+                                        class="text-red-500 hover:text-red-700 text-xs font-semibold transition-colors">Delete</a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -54,20 +77,12 @@
                     </table>
                 </div>
                 {% else %}
-                <div class="text-center py-6 text-slate-400 italic">
-                    No quizzes created yet.
+                <div class="flex flex-col items-center py-8 text-slate-400 gap-2">
+                    <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <p class="text-sm italic">No quizzes yet.</p>
+                    <a href="{{ url_for('generate_ai_quiz') }}" class="text-xs font-bold text-indigo-600 hover:underline">Generate with AI →</a>
                 </div>
                 {% endif %}
-
-                <div class="mt-6">
-                    <a href="{{ url_for('add_quiz', subject_id=subject.id) }}"
-                        class="w-full inline-flex items-center justify-center px-4 py-2 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Add Quiz
-                    </a>
-                </div>
             </div>
         </div>
         {% endfor %}
@@ -80,8 +95,7 @@
             </svg>
         </div>
         <h3 class="text-xl font-bold text-slate-900">No Subjects Found</h3>
-        <p class="text-slate-500 mt-1 max-w-sm mx-auto">Get started by creating your first subject to organize your
-            curriculum.</p>
+        <p class="text-slate-500 mt-1 max-w-sm mx-auto">Get started by creating your first subject to organize your curriculum.</p>
         <a href="{{ url_for('add_subject') }}"
             class="mt-6 inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
             Create First Subject
