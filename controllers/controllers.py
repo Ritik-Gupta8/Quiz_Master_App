@@ -6,8 +6,12 @@ from models.models import *
 from flask import current_app as app
 from datetime import datetime,date,timedelta,timezone
 from controllers.gemini_service import generate_quiz_questions
+from sqlalchemy import func
 import os
 import json
+
+# Default subjects always shown to users (merged with DB subjects)
+DEFAULT_SUBJECTS = ["Physics", "Mathematics", "General Knowledge", "Chemistry", "Biology", "English"]
 
 def role_required(role_name):
     def decorator(f):
@@ -105,12 +109,19 @@ def user_deatils():
 @role_required("admin")
 def add_subject():
     if request.method=="POST":
-        sname=request.form.get("name")
+        sname=request.form.get("name").strip()
         description=request.form.get("description")
- 
+
+        # Check for duplicate subject name (case-insensitive)
+        existing = Subject.query.filter(Subject.name.ilike(sname)).first()
+        if existing:
+            flash(f"Subject '{existing.name}' already exists in the database!", "warning")
+            return render_template("add_subject.html", subject_exists=True, existing_name=existing.name)
+
         new_subject=Subject(name=sname, description=description)
         db.session.add(new_subject)
         db.session.commit()
+        flash(f"Subject '{sname}' added successfully!", "success")
         return redirect(url_for("admin_dashboard"))
 
     return render_template("add_subject.html")
@@ -148,25 +159,8 @@ def quiz_management():
     quizzes = Quiz.query.all()
     return render_template("quiz_management.html", quizzes=quizzes)
 
-@app.route("/add_quiz/<subject_id>", methods=["POST", "GET"])
-@role_required("admin")
-def add_quiz(subject_id):
-    if request.method == "POST":
-        topic = request.form.get("topic", "General Topic")
-        date_of_quiz = request.form.get("date_of_quiz")
-        time_duration = request.form.get("time_duration")
-        no_of_questions = request.form.get("no_of_questions")
-        difficulty = request.form.get("difficulty", "Medium")
-        date = datetime.strptime(date_of_quiz, "%Y-%m-%d").date()
 
-        new_quiz = Quiz(subject_id=subject_id, topic=topic, date_of_quiz=date, no_of_questions=no_of_questions, time_duration=time_duration, difficulty=difficulty)
-        db.session.add(new_quiz)
-        db.session.commit()
-        return redirect(url_for("quiz_management"))
 
-    subjects = Subject.query.all()
-    subject = Subject.query.get_or_404(subject_id)
-    return render_template("add_quiz.html", subjects=subjects, selected_subject_id=subject_id, selected_subject_name=subject.name)
 
 @app.route("/edit_quiz/<id>",methods=["GET","POST"])
 @role_required("admin")
@@ -206,35 +200,55 @@ def delete_quiz(id):
 @app.route("/generate_ai_quiz", methods=["GET", "POST"])
 @role_required("admin")
 def generate_ai_quiz():
+    # Difficulty → (num_questions, time_duration)
+    DIFFICULTY_CONFIG = {
+        "Easy":   (5,  "00:05"),
+        "Medium": (10, "00:10"),
+        "High":   (15, "00:15"),
+    }
+
     if request.method == "POST":
-        subject_id = request.form.get("subject_id")
-        topic = request.form.get("topic", "General Topic")
-        num_questions = int(request.form.get("num_questions", 10))
+        subject_name = request.form.get("subject_name", "").strip()
+        subject_id = request.form.get("subject_id", "").strip()
         level = request.form.get("level", "Medium")
         grade = request.form.get("grade", "10th")
-        time_duration = request.form.get("time_duration")
-        
-        subject = Subject.query.get_or_404(subject_id)
-        
+
+        # Auto-configure based on difficulty
+        num_questions, time_duration = DIFFICULTY_CONFIG.get(level, (10, "00:10"))
+        topic = f"AI Quiz ({grade} Grade)"
+
+        # Resolve subject: if subject_id provided use it, else find/create by name
+        if subject_id:
+            subject = Subject.query.get_or_404(subject_id)
+        elif subject_name:
+            subject = Subject.query.filter(Subject.name.ilike(subject_name)).first()
+            if not subject:
+                subject = Subject(name=subject_name, description=f"AI Generated Subject for {subject_name}")
+                db.session.add(subject)
+                db.session.flush()
+        else:
+            flash("Please select or enter a subject.", "error")
+            return redirect(url_for("generate_ai_quiz"))
+
         # Call Gemini AI
-        results = generate_quiz_questions(subject.name, topic, num_questions, level, grade)
-        
+        results = generate_quiz_questions(subject.name, "General Topics", num_questions, level, grade)
+
         if isinstance(results, dict) and "error" in results:
             flash(f"AI Generation Failed: {results['error']}", "error")
             return redirect(url_for("generate_ai_quiz"))
-        
-        # Create a new Quiz for this generation
+
+        # Create a new Quiz
         new_quiz = Quiz(
-            subject_id=subject_id, 
+            subject_id=subject.id,
             topic=topic,
-            date_of_quiz=date.today(), 
-            no_of_questions=len(results), 
+            date_of_quiz=date.today(),
+            no_of_questions=len(results),
             time_duration=time_duration,
             difficulty=level
         )
         db.session.add(new_quiz)
-        db.session.flush() # Get quiz ID
-        
+        db.session.flush()
+
         # Add questions
         for q_data in results:
             new_question = Question(
@@ -248,41 +262,50 @@ def generate_ai_quiz():
                 correct_option=q_data.get("correct_option")
             )
             db.session.add(new_question)
-            
+
         db.session.commit()
+        flash(f"Quiz generated for {subject.name} ({level}) — {len(results)} questions, {time_duration} duration!", "success")
         return redirect(url_for("quiz_management"))
 
-    subjects = Subject.query.all()
+    # Merge default subjects with DB subjects (avoid duplicates)
+    db_subjects = Subject.query.all()
+    db_subject_names_lower = {s.name.lower() for s in db_subjects}
+    extra_defaults = [s for s in DEFAULT_SUBJECTS if s.lower() not in db_subject_names_lower]
     has_api_key = os.environ.get("GOOGLE_API_KEY") is not None
-    return render_template("generate_ai_quiz.html", subjects=subjects, has_api_key=has_api_key)
+    return render_template("generate_ai_quiz.html", subjects=db_subjects, default_subjects=extra_defaults, has_api_key=has_api_key)
 
 @app.route("/user_generate_ai_quiz", methods=["POST"])
 @role_required("user")
 def user_generate_ai_quiz():
+    # Difficulty → (num_questions, time_duration)
+    DIFFICULTY_CONFIG = {
+        "Easy":   (5,  "00:05"),
+        "Medium": (10, "00:10"),
+        "High":   (15, "00:15"),
+    }
+
     grade = request.form.get("grade", "10th")
-    subject_name = request.form.get("subject", "General Knowledge")
+    subject_name = request.form.get("subject", "General Knowledge").strip()
     difficulty = request.form.get("difficulty", "Medium")
-    
-    # Map difficulty to duration
-    duration_map = {"Easy": "00:05", "Medium": "00:10", "High": "00:15"}
-    duration = duration_map.get(difficulty, "00:10")
-    
+
+    num_questions, duration = DIFFICULTY_CONFIG.get(difficulty, (10, "00:10"))
+
     # Find or create subject
     subject = Subject.query.filter(Subject.name.ilike(subject_name)).first()
     if not subject:
         subject = Subject(name=subject_name, description=f"AI Generated Subject for {subject_name}")
         db.session.add(subject)
         db.session.flush()
-        
+
     topic = f"AI Practice ({grade} Grade)"
 
-    # Generate 20 questions with grade context
-    results = generate_quiz_questions(subject.name, "General Topics", 10, difficulty, grade)
-    
+    # Generate questions with grade context
+    results = generate_quiz_questions(subject.name, "General Topics", num_questions, difficulty, grade)
+
     if isinstance(results, dict) and "error" in results:
         flash(f"AI Generation Failed: {results['error']}", "error")
         return redirect(url_for("user_dashboard"))
-        
+
     # Create the Quiz
     new_quiz = Quiz(
         subject_id=subject.id,
@@ -294,7 +317,7 @@ def user_generate_ai_quiz():
     )
     db.session.add(new_quiz)
     db.session.flush()
-    
+
     # Add Questions
     for q_data in results:
         new_question = Question(
@@ -308,9 +331,8 @@ def user_generate_ai_quiz():
             correct_option=q_data.get("correct_option")
         )
         db.session.add(new_question)
-        
+
     db.session.commit()
-    
     return redirect(url_for("start_quiz", qid=new_quiz.id))
 
 @app.route("/search", methods=["GET", "POST"])
@@ -389,7 +411,13 @@ def admin_summary():
 def user_dashboard():
     quizzes = Quiz.query.join(Question).group_by(Quiz.id).all()
     dt_time_now = date.today()
-    return render_template("user_dashboard.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now)
+    # Merge DB subjects with default subjects for the quiz generator dropdown
+    db_subjects = Subject.query.all()
+    db_subject_names_lower = {s.name.lower() for s in db_subjects}
+    extra_defaults = [s for s in DEFAULT_SUBJECTS if s.lower() not in db_subject_names_lower]
+    return render_template("user_dashboard.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now, db_subjects=db_subjects, default_subjects=extra_defaults)
+
+MAX_QUIZ_ATTEMPTS = 3
 
 @app.route("/start_quiz/<qid>")
 @role_required("user")
@@ -397,38 +425,48 @@ def start_quiz(qid):
     quiz = Quiz.query.get_or_404(qid)
     questions = Question.query.filter_by(quiz_id=qid).all()
 
-    # Check for existing attempt
-    attempt = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id).first()
-    
-    if attempt:
-        if attempt.status in ["submitted", "expired"]:
-            flash("You have already completed this quiz.", "info")
-            return redirect(url_for("view_score"))
-        
-        # Resume attempt - use stored end_time
-        end_time_str = attempt.end_time.isoformat()
-        current_answers = json.loads(attempt.answers)
-    else:
-        # Create new attempt
-        hours, minutes = map(int, quiz.time_duration.split(":"))  
-        start_time = datetime.now(timezone.utc)
-        end_time = start_time + timedelta(hours=hours, minutes=minutes)
-        
-        attempt = QuizAttempt(
-            quiz_id=qid,
-            user_id=current_user.id,
-            status="in_progress",
-            start_time=start_time,
-            end_time=end_time,
-            answers="{}"
-        )
-        db.session.add(attempt)
-        db.session.commit()
-        
-        end_time_str = end_time.isoformat()
-        current_answers = {}
+    # Check all attempts for this user+quiz
+    all_attempts = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id).all()
+    completed_attempts = [a for a in all_attempts if a.status in ["submitted", "expired"]]
+    active_attempt = next((a for a in all_attempts if a.status == "in_progress"), None)
 
-    return render_template("start_quiz.html", user=current_user, quiz=quiz, questions=questions, end_time=end_time_str, current_answers=current_answers)
+    if active_attempt:
+        # Resume existing in-progress attempt
+        end_time_str = active_attempt.end_time.isoformat()
+        current_answers = json.loads(active_attempt.answers)
+        attempt_num = len(completed_attempts) + 1
+        return render_template("start_quiz.html", user=current_user, quiz=quiz, questions=questions,
+                               end_time=end_time_str, current_answers=current_answers,
+                               attempt_num=attempt_num, max_attempts=MAX_QUIZ_ATTEMPTS)
+
+    # No active attempt — check if limit reached
+    if len(completed_attempts) >= MAX_QUIZ_ATTEMPTS:
+        flash(f"You have reached the maximum of {MAX_QUIZ_ATTEMPTS} attempts for this quiz.", "warning")
+        return redirect(url_for("view_score"))
+
+    # Create new attempt
+    hours, minutes = map(int, quiz.time_duration.split(":"))
+    start_time = datetime.now(timezone.utc)
+    end_time = start_time + timedelta(hours=hours, minutes=minutes)
+
+    attempt = QuizAttempt(
+        quiz_id=qid,
+        user_id=current_user.id,
+        status="in_progress",
+        start_time=start_time,
+        end_time=end_time,
+        answers="{}"
+    )
+    db.session.add(attempt)
+    db.session.commit()
+
+    end_time_str = end_time.isoformat()
+    current_answers = {}
+    attempt_num = len(completed_attempts) + 1
+
+    return render_template("start_quiz.html", user=current_user, quiz=quiz, questions=questions,
+                           end_time=end_time_str, current_answers=current_answers,
+                           attempt_num=attempt_num, max_attempts=MAX_QUIZ_ATTEMPTS)
 
 @app.route("/save_answer/<qid>", methods=["POST"])
 @role_required("user")
@@ -436,32 +474,34 @@ def save_answer(qid):
     data = request.get_json()
     question_id = str(data.get("question_id"))
     selected_option = data.get("selected_option")
-    
-    attempt = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id, status="in_progress").first()
-    
+
+    # Always use the latest in_progress attempt
+    attempt = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id, status="in_progress").order_by(QuizAttempt.id.desc()).first()
+
     if not attempt:
         return json.dumps({"success": False, "error": "No active attempt found"}), 403
-    
+
     if datetime.now(timezone.utc) > attempt.end_time.replace(tzinfo=timezone.utc):
         attempt.status = "expired"
         db.session.commit()
         return json.dumps({"success": False, "error": "Quiz time has expired"}), 403
-    
+
     answers = json.loads(attempt.answers)
     answers[question_id] = selected_option
     attempt.answers = json.dumps(answers)
     db.session.commit()
-    
+
     return json.dumps({"success": True})
 
 @app.route("/submit_quiz/<qid>", methods=["POST"])
 @role_required("user")
 def submit_quiz(qid):
     quiz = Quiz.query.get_or_404(qid)
-    attempt = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id).first()
+    # Get the latest in_progress attempt
+    attempt = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id, status="in_progress").order_by(QuizAttempt.id.desc()).first()
 
-    if not attempt or attempt.status in ["submitted", "expired"]:
-        flash("Unauthorized submission or quiz already submitted.", "danger")
+    if not attempt:
+        flash("No active quiz attempt found.", "danger")
         return redirect(url_for("user_dashboard"))
 
     # Final time check (allow 10 second buffer)
@@ -474,44 +514,62 @@ def submit_quiz(qid):
     # Merge form answers with stored answers (form takes precedence for the final submit)
     questions = Question.query.filter_by(quiz_id=qid).all()
     stored_answers = json.loads(attempt.answers)
-    
+
     final_answers = {}
     for q in questions:
-        # Try form first, then stored
         val = request.form.get(f"answer_{q.id}") or stored_answers.get(str(q.id))
         final_answers[str(q.id)] = val
-    
+
     attempt.answers = json.dumps(final_answers)
-    
+
     # Calculate score
     total_score = 0
     for q in questions:
         if final_answers.get(str(q.id)) == getattr(q, q.correct_option):
             total_score += 1
-    
+
     attempt.final_score = total_score
-    
-    # Also update/create Score for legacy/summary views if needed
-    timestamp = datetime.now() 
+
+    # Always update Score to latest attempt's score (for leaderboard/view_score)
+    timestamp = datetime.now()
     existing_score = Score.query.filter_by(quiz_id=quiz.id, user_id=current_user.id).first()
     if existing_score:
         existing_score.total_score = total_score
-        existing_score.timestamp = timestamp 
+        existing_score.timestamp = timestamp
     else:
         new_score = Score(quiz_id=quiz.id, user_id=current_user.id, total_score=total_score, timestamp=timestamp)
         db.session.add(new_score)
-    
+
     db.session.commit()
+
+    # Count completed attempts for feedback
+    completed_count = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id).filter(
+        QuizAttempt.status.in_(["submitted", "expired"])).count()
+    remaining = MAX_QUIZ_ATTEMPTS - completed_count
+    if remaining > 0:
+        flash(f"Quiz submitted! Score: {total_score}/{quiz.no_of_questions}. You have {remaining} attempt(s) remaining for this quiz.", "success")
+    else:
+        flash(f"Quiz submitted! Score: {total_score}/{quiz.no_of_questions}. You have used all {MAX_QUIZ_ATTEMPTS} attempts.", "info")
+
     return redirect(url_for("view_score"))
 
 @app.route("/view_score")
 @role_required("user")
 def view_score():
-    scores = Score.query.filter_by(user_id=current_user.id).all() 
-    quizzes = Quiz.query.filter(Quiz.id.in_([score.quiz_id for score in scores])).all()  
-    dt_time_now = datetime.now().date() 
+    # Latest score per quiz (Score table always holds the most recent attempt's score)
+    scores = Score.query.filter_by(user_id=current_user.id).all()
+    quiz_ids = [score.quiz_id for score in scores]
+    quizzes = Quiz.query.filter(Quiz.id.in_(quiz_ids)).all() if quiz_ids else []
+    dt_time_now = datetime.now().date()
 
-    return render_template("view_score.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now, scores=scores)
+    # Build attempt count map per quiz for display
+    attempt_counts = {}
+    for qid in quiz_ids:
+        attempt_counts[qid] = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id).filter(
+            QuizAttempt.status.in_(["submitted", "expired"])).count()
+
+    return render_template("view_score.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now,
+                           scores=scores, attempt_counts=attempt_counts, max_attempts=MAX_QUIZ_ATTEMPTS)
 
 @app.route("/user_search", methods=["GET", "POST"])
 @role_required("user")
