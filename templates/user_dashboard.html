@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <form action="/user_generate_ai_quiz/{{ user.id }}/{{ name }}" method="POST" class="p-8">
+        <form action="{{ url_for('user_generate_ai_quiz') }}" method="POST" class="p-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Select Grade</label>
@@ -40,12 +40,20 @@
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Select Subject</label>
                     <select name="subject" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-medium">
-                        <option value="Physics">Physics</option>
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="General Knowledge">General Knowledge</option>
-                        <option value="Chemistry">Chemistry</option>
-                        <option value="Biography">Biography</option>
-                        <option value="English">English</option>
+                        {% if db_subjects %}
+                        <optgroup label="── Admin-Added Subjects ──">
+                            {% for subject in db_subjects %}
+                            <option value="{{ subject.name }}">{{ subject.name }}</option>
+                            {% endfor %}
+                        </optgroup>
+                        {% endif %}
+                        {% if default_subjects %}
+                        <optgroup label="── More Subjects ──">
+                            {% for dname in default_subjects %}
+                            <option value="{{ dname }}">{{ dname }}</option>
+                            {% endfor %}
+                        </optgroup>
+                        {% endif %}
                     </select>
                 </div>
                 <div>
@@ -78,8 +86,8 @@
             <div class="p-6 space-y-4">
                 <div class="flex items-start justify-between">
                     <div class="space-y-1">
-                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider">{{ quiz.chapter.subject.name }}</span>
-                        <h3 class="text-xl font-bold text-slate-900 leading-tight group-hover:text-indigo-600 transition-colors">{{ quiz.chapter.name }}</h3>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider">{{ quiz.subject.name }}</span>
+                        <h3 class="text-xl font-bold text-slate-900 leading-tight group-hover:text-indigo-600 transition-colors">{{ quiz.topic }}</h3>
                     </div>
                     <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-indigo-500 transition-colors">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -102,7 +110,7 @@
                         <svg class="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                         {{ quiz.date_of_quiz }}
                     </div>
-                    <a href="/start_quiz/{{quiz.id}}/{{user.id}}/{{name}}" 
+                    <a href="{{ url_for('start_quiz', qid=quiz.id) }}" 
                        class="inline-flex items-center px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
                         Take Quiz
                     </a>
@@ -124,7 +132,7 @@
 </div>
 
 <script>
-    document.querySelector('form[action^="/user_generate_ai_quiz/"]').addEventListener('submit', function() {
+    document.querySelector('form').addEventListener('submit', function() {
         document.getElementById('loading-overlay').style.display = 'flex';
     });
 </script>
