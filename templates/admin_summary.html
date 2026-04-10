@@ -4,27 +4,166 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">System Analytics</h2>
-            <p class="text-slate-500 mt-1">Overview of performance data across all subjects.</p>
+            <p class="text-slate-500 mt-1">Real-time performance metrics and user engagement.</p>
         </div>
         <div class="h-12 w-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-        <div class="px-8 py-6 bg-slate-50 border-b border-slate-100">
-            <h3 class="text-lg font-bold text-slate-700">Top Scores Distribution</h3>
-            <p class="text-sm text-slate-500">Visual representation of the highest achievements by subject.</p>
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Quizzes Created</p>
+            <div class="flex items-end justify-between">
+                <h3 class="text-3xl font-black text-slate-900 leading-none">{{ data.total_quizzes }}</h3>
+                <div class="h-8 w-8 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+            </div>
         </div>
-        <div class="p-8 flex justify-center">
-            <div class="relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-                <img src="{{ url_for('static', filename='images/admin_summary.jpeg') }}" 
-                     class="relative rounded-xl shadow-lg border border-slate-100 max-w-full h-auto" 
-                     alt="Admin Summary Chart">
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Active Students</p>
+            <div class="flex items-end justify-between">
+                <h3 class="text-3xl font-black text-slate-900 leading-none">{{ data.active_users }}</h3>
+                <div class="h-8 w-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Global Avg Score</p>
+            <div class="flex items-end justify-between">
+                <h3 class="text-3xl font-black text-slate-900 leading-none">{{ data.avg_score }}%</h3>
+                <div class="h-8 w-8 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-700">Subject-wise Performance</h3>
+                    <p class="text-xs text-slate-500">Average percentage score per subject</p>
+                </div>
+                <svg class="h-5 w-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+            </div>
+            <div class="p-10">
+                <canvas id="subjectChart" height="240"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-700">Difficulty Distribution</h3>
+                    <p class="text-xs text-slate-500">Performance variation by quiz level</p>
+                </div>
+                <svg class="h-5 w-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+            </div>
+            <div class="p-10">
+                <canvas id="difficultyChart" height="240"></canvas>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const subjectData = {{ data.subject_performance | tojson | safe }};
+        const difficultyData = {{ data.difficulty_performance | tojson | safe }};
+
+        // Subject-wise Chart
+        new Chart(document.getElementById('subjectChart'), {
+            type: 'bar',
+            data: {
+                labels: subjectData.map(d => d.name),
+                datasets: [{
+                    label: 'Avg Score %',
+                    data: subjectData.map(d => d.value),
+                    backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                    borderColor: '#6366f1',
+                    borderWidth: 2,
+                    borderRadius: 12,
+                    borderSkipped: false,
+                    barThickness: 32
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        displayColors: false,
+                        callbacks: {
+                            label: (context) => `Avg Score: ${context.raw}%`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { borderDash: [5, 5], color: '#f1f5f9' },
+                        ticks: { color: '#94a3b8', font: { weight: 'bold' } }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#475569', font: { weight: 'bold' } }
+                    }
+                }
+            }
+        });
+
+        // Difficulty Chart
+        new Chart(document.getElementById('difficultyChart'), {
+            type: 'doughnut',
+            data: {
+                labels: difficultyData.map(d => d.name),
+                datasets: [{
+                    data: difficultyData.map(d => d.value),
+                    backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                    borderColor: '#ffffff',
+                    borderWidth: 4,
+                    hoverOffset: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 24,
+                            usePointStyle: true,
+                            font: { size: 12, weight: 'bold' },
+                            color: '#475569'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        callbacks: {
+                            label: (context) => ` ${context.label}: ${context.raw}%`
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
-   
