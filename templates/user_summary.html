@@ -4,26 +4,181 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Your Progress</h2>
-            <p class="text-slate-500 mt-1">A visual summary of your learning journey.</p>
+            <p class="text-slate-500 mt-1">Detailed analysis of your personal learning journey.</p>
         </div>
         <div class="h-12 w-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-        <div class="px-8 py-6 bg-slate-50 border-b border-slate-100">
-            <h3 class="text-lg font-bold text-slate-700">Performance Overview</h3>
-            <p class="text-sm text-slate-500">Visual breakdown of your quiz attempts and scores.</p>
+    <!-- Top Charts: History & Trend -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Accuracy Trend -->
+        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-700">Accuracy Trend</h3>
+                    <p class="text-xs text-slate-500">Your score trajectory over the last 10 attempts</p>
+                </div>
+                <div class="h-8 w-8 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                </div>
+            </div>
+            <div class="p-8">
+                <canvas id="trendChart" height="250"></canvas>
+            </div>
         </div>
-        <div class="p-8 flex justify-center">
-            <div class="relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000"></div>
-                <img src="{{ url_for('static', filename='images/user_summary.jpeg') }}" 
-                     class="relative rounded-xl shadow-lg border border-slate-100 max-w-full h-auto" 
-                     alt="User Summary Chart">
+
+        <!-- Quiz History Table-style Chart -->
+        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-700">Recent Quiz Scores</h3>
+                    <p class="text-xs text-slate-500">Breakdown of your last 5 attempts</p>
+                </div>
+                <div class="h-8 w-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </div>
+            </div>
+            <div class="p-8">
+                <canvas id="historyChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Charts: Subjects & Time -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Subject Performance -->
+        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-700">Performance by Subject</h3>
+                    <p class="text-xs text-slate-500">Average percentage score across topics</p>
+                </div>
+            </div>
+            <div class="p-8">
+                <canvas id="subjectChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <!-- Time Spent -->
+        <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <div class="px-8 py-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-700">Time Usage</h3>
+                    <p class="text-xs text-slate-500">Duration in minutes per attempt</p>
+                </div>
+                <div class="h-8 w-8 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+            </div>
+            <div class="p-8">
+                <canvas id="timeChart" height="250"></canvas>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const data = {{ data | tojson | safe }};
+
+        // 1. Accuracy Trend Chart
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: data.accuracy_trend.map(d => d.date),
+                datasets: [{
+                    label: 'Accuracy %',
+                    data: data.accuracy_trend.map(d => d.value),
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#6366f1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, max: 100, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. Quiz History Chart (Horizontal Bar)
+        new Chart(document.getElementById('historyChart'), {
+            type: 'bar',
+            data: {
+                labels: data.quiz_history.map(d => d.quiz),
+                datasets: [{
+                    label: 'Score',
+                    data: data.quiz_history.map(d => d.score),
+                    backgroundColor: '#10b981',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, grid: { borderDash: [5, 5] } }
+                }
+            }
+        });
+
+        // 3. Subject Score Chart (Polar Area)
+        new Chart(document.getElementById('subjectChart'), {
+            type: 'polarArea',
+            data: {
+                labels: data.subject_scores.map(d => d.name),
+                datasets: [{
+                    data: data.subject_scores.map(d => d.value),
+                    backgroundColor: [
+                        'rgba(99, 102, 241, 0.7)',
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(239, 68, 68, 0.7)',
+                        'rgba(139, 92, 246, 0.7)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // 4. Time Data Chart (Bubble or Scatter style bar)
+        new Chart(document.getElementById('timeChart'), {
+            type: 'bar',
+            data: {
+                labels: data.time_data.map(d => d.quiz),
+                datasets: [{
+                    label: 'Minutes',
+                    data: data.time_data.map(d => d.minutes),
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Minutes' } }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}
