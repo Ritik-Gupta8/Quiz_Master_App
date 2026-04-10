@@ -7,6 +7,15 @@
             <p class="text-sm text-slate-500">Group your chapters under a broader subject category.</p>
         </div>
         <form action="{{ url_for('add_subject') }}" method="POST" class="p-8 space-y-6">
+            {% if subject_exists %}
+            <div class="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+                <svg class="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <div>
+                    <p class="text-sm font-bold text-amber-800">Subject Already Exists!</p>
+                    <p class="text-xs text-amber-700 mt-0.5">"{{ existing_name }}" is already in the database. Please use a different name or edit the existing subject.</p>
+                </div>
+            </div>
+            {% endif %}
             <div class="space-y-2">
                 <label for="name" class="block text-sm font-semibold text-slate-700">Subject Name</label>
                 <input type="text" name="name" id="name" required placeholder="e.g. Mathematics, History, Physics"
