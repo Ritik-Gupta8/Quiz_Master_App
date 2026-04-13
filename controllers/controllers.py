@@ -530,15 +530,11 @@ def submit_quiz(qid):
 
     attempt.final_score = total_score
 
-    # Always update Score to latest attempt's score (for leaderboard/view_score)
+    # Always INSERT a new Score row — we keep ALL attempts.
+    # The view_score page will find and display the HIGHEST score.
     timestamp = datetime.now()
-    existing_score = Score.query.filter_by(quiz_id=quiz.id, user_id=current_user.id).first()
-    if existing_score:
-        existing_score.total_score = total_score
-        existing_score.timestamp = timestamp
-    else:
-        new_score = Score(quiz_id=quiz.id, user_id=current_user.id, total_score=total_score, timestamp=timestamp)
-        db.session.add(new_score)
+    new_score = Score(quiz_id=quiz.id, user_id=current_user.id, total_score=total_score, timestamp=timestamp)
+    db.session.add(new_score)
 
     db.session.commit()
 
@@ -546,30 +542,47 @@ def submit_quiz(qid):
     completed_count = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id).filter(
         QuizAttempt.status.in_(["submitted", "expired"])).count()
     remaining = MAX_QUIZ_ATTEMPTS - completed_count
+
+    # Tell user their score and remaining attempts
+    all_scores_for_quiz = Score.query.filter_by(quiz_id=quiz.id, user_id=current_user.id).all()
+    best = max(all_scores_for_quiz, key=lambda s: s.total_score)
     if remaining > 0:
-        flash(f"Quiz submitted! Score: {total_score}/{quiz.no_of_questions}. You have {remaining} attempt(s) remaining for this quiz.", "success")
+        flash(f"Attempt {completed_count}/{MAX_QUIZ_ATTEMPTS} done! Score: {total_score}/{quiz.no_of_questions}. "
+              f"Best so far: {best.total_score}/{quiz.no_of_questions}. {remaining} attempt(s) remaining.", "success")
     else:
-        flash(f"Quiz submitted! Score: {total_score}/{quiz.no_of_questions}. You have used all {MAX_QUIZ_ATTEMPTS} attempts.", "info")
+        flash(f"All {MAX_QUIZ_ATTEMPTS} attempts used! Final score: {total_score}/{quiz.no_of_questions}. "
+              f"Best score: {best.total_score}/{quiz.no_of_questions}.", "info")
 
     return redirect(url_for("view_score"))
 
 @app.route("/view_score")
 @role_required("user")
 def view_score():
-    # Latest score per quiz (Score table always holds the most recent attempt's score)
-    scores = Score.query.filter_by(user_id=current_user.id).all()
-    quiz_ids = [score.quiz_id for score in scores]
+    # Get ALL score rows for this user
+    all_scores = Score.query.filter_by(user_id=current_user.id).order_by(Score.timestamp.asc()).all()
+
+    # Group by quiz_id — keep the BEST (highest) score per quiz for display
+    best_score_map = {}       # quiz_id -> Score object with highest total_score
+    all_scores_by_quiz = {}   # quiz_id -> list of all Score objects (for history)
+    for score in all_scores:
+        all_scores_by_quiz.setdefault(score.quiz_id, []).append(score)
+        if score.quiz_id not in best_score_map or score.total_score > best_score_map[score.quiz_id].total_score:
+            best_score_map[score.quiz_id] = score
+
+    quiz_ids = list(best_score_map.keys())
+    best_scores = list(best_score_map.values())
     quizzes = Quiz.query.filter(Quiz.id.in_(quiz_ids)).all() if quiz_ids else []
     dt_time_now = datetime.now().date()
 
-    # Build attempt count map per quiz for display
+    # Build attempt counts per quiz
     attempt_counts = {}
     for qid in quiz_ids:
         attempt_counts[qid] = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id).filter(
             QuizAttempt.status.in_(["submitted", "expired"])).count()
 
     return render_template("view_score.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now,
-                           scores=scores, attempt_counts=attempt_counts, max_attempts=MAX_QUIZ_ATTEMPTS)
+                           scores=best_scores, attempt_counts=attempt_counts, max_attempts=MAX_QUIZ_ATTEMPTS,
+                           all_scores_by_quiz=all_scores_by_quiz)
 
 @app.route("/user_search", methods=["GET", "POST"])
 @role_required("user")
