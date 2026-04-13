@@ -4,12 +4,11 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Your Achievements</h2>
-            <p class="text-slate-500 mt-1">Review your past performance and growth.</p>
+            <p class="text-slate-500 mt-1">Best scores shown. Expand any row to see all attempts.</p>
         </div>
         <div class="h-12 w-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
         </div>
     </div>
@@ -20,27 +19,35 @@
             <table class="min-w-full divide-y divide-slate-100">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-                            Topic &amp; Subject</th>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-                            Attempt Date</th>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-                            Attempts</th>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-                            Latest Score</th>
-                        <th class="px-6 py-4 text-right font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-                            Status</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Topic &amp; Subject</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Best Score Date</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Attempts</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">🏆 Best Score</th>
+                        <th class="px-6 py-4 text-right font-bold text-slate-500 uppercase tracking-wider text-[10px]">Status</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     {% for score in scores %}
                     {% set quiz = quizzes | selectattr("id", "equalto", score.quiz_id) | first %}
                     {% if quiz %}
-                    <tr class="hover:bg-slate-50 transition-colors group">
+                    {% set attempts_used = attempt_counts.get(quiz.id, 0) %}
+                    {% set history = all_scores_by_quiz.get(quiz.id, []) %}
+                    {% set percentage = (score.total_score / quiz.no_of_questions * 100) | round | int %}
+
+                    <!-- Main Row -->
+                    <tr class="hover:bg-slate-50 transition-colors group cursor-pointer"
+                        onclick="toggleHistory('history-{{ quiz.id }}', this)">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex flex-col">
                                 <span class="text-xs font-bold text-indigo-600 uppercase">{{ quiz.subject.name }}</span>
                                 <span class="text-sm font-bold text-slate-900">{{ quiz.topic }}</span>
+                                {% if quiz.difficulty == 'Easy' %}
+                                <span class="mt-1 self-start px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700">Easy</span>
+                                {% elif quiz.difficulty == 'Medium' %}
+                                <span class="mt-1 self-start px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-700">Medium</span>
+                                {% else %}
+                                <span class="mt-1 self-start px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-100 text-red-700">{{ quiz.difficulty }}</span>
+                                {% endif %}
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
@@ -48,8 +55,7 @@
                             <span class="text-slate-300 block text-xs">{{ score.timestamp.strftime("%I:%M %p") }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            {% set attempts_used = attempt_counts.get(quiz.id, 0) %}
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 flex-wrap">
                                 <span class="text-sm font-bold text-slate-700">{{ attempts_used }}/{{ max_attempts }}</span>
                                 <div class="flex gap-1">
                                     {% for i in range(max_attempts) %}
@@ -61,28 +67,55 @@
                                     {% endfor %}
                                 </div>
                                 {% if attempts_used < max_attempts %}
-                                <a href="{{ url_for('start_quiz', qid=quiz.id) }}" class="ml-2 text-[10px] font-bold text-indigo-600 hover:underline">Retry →</a>
+                                <a href="{{ url_for('start_quiz', qid=quiz.id) }}"
+                                   onclick="event.stopPropagation()"
+                                   class="text-[10px] font-bold text-indigo-600 hover:underline whitespace-nowrap">Retry →</a>
                                 {% endif %}
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <span class="text-lg font-extrabold text-slate-900 mr-2">{{ score.total_score }}</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xl font-black text-indigo-600">{{ score.total_score }}</span>
                                 <span class="text-xs font-medium text-slate-400">/ {{ quiz.no_of_questions }}</span>
+                                <span class="ml-1 text-[10px] font-bold text-slate-400">{{ percentage }}%</span>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right">
-                            {% set percentage = (score.total_score / quiz.no_of_questions * 100) | round | int %}
-                            {% if percentage >= 80 %}
-                            <span
-                                class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">Excellence</span>
-                            {% elif percentage >= 50 %}
-                            <span
-                                class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">Passed</span>
-                            {% else %}
-                            <span
-                                class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Developing</span>
-                            {% endif %}
+                            <div class="flex items-center justify-end gap-2">
+                                {% if percentage >= 80 %}
+                                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">Excellence</span>
+                                {% elif percentage >= 50 %}
+                                <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">Passed</span>
+                                {% else %}
+                                <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Developing</span>
+                                {% endif %}
+                                <!-- expand icon -->
+                                <svg class="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Expandable History Row -->
+                    <tr id="history-{{ quiz.id }}" class="hidden bg-indigo-50/40">
+                        <td colspan="5" class="px-6 py-4">
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">All Attempts History</p>
+                            <div class="flex flex-wrap gap-3">
+                                {% for h in history %}
+                                {% set h_pct = (h.total_score / quiz.no_of_questions * 100) | round | int %}
+                                <div class="flex flex-col items-center bg-white rounded-2xl border border-slate-100 px-5 py-3 shadow-sm">
+                                    <span class="text-[10px] text-slate-400 mb-1">{{ h.timestamp.strftime("%b %d, %H:%M") }}</span>
+                                    <span class="text-xl font-black {% if h.total_score == score.total_score and loop.last %}text-indigo-600{% else %}text-slate-700{% endif %}">
+                                        {{ h.total_score }}/{{ quiz.no_of_questions }}
+                                    </span>
+                                    <span class="text-[10px] font-bold mt-1 {% if h_pct >= 80 %}text-emerald-600{% elif h_pct >= 50 %}text-amber-600{% else %}text-red-500{% endif %}">
+                                        {{ h_pct }}%
+                                    </span>
+                                    {% if h.total_score == score.total_score %}
+                                    <span class="mt-1 text-[9px] font-black text-indigo-600 uppercase tracking-wider">★ Best</span>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
                         </td>
                     </tr>
                     {% endif %}
@@ -109,4 +142,18 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+    function toggleHistory(id, row) {
+        const historyRow = document.getElementById(id);
+        const icon = row.querySelector('.expand-icon');
+        if (historyRow.classList.contains('hidden')) {
+            historyRow.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            historyRow.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
+</script>
 {% endblock %}
