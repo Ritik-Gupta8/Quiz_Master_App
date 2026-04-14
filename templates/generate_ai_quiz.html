@@ -4,7 +4,8 @@
     <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
         <div class="px-8 py-6 bg-gradient-to-r from-purple-600 to-indigo-600">
             <h3 class="text-xl font-bold text-white">AI Quiz Generator</h3>
-            <p class="text-indigo-100 text-sm opacity-90">Leverage Gemini AI to create high-quality quiz questions instantly.</p>
+            <p class="text-indigo-100 text-sm opacity-90">Leverage Gemini AI to create high-quality quiz questions
+                instantly.</p>
         </div>
 
         <form action="{{ url_for('generate_ai_quiz') }}" method="POST" class="p-8 space-y-6">
@@ -12,7 +13,8 @@
 
                 <!-- Subject -->
                 <div class="space-y-2">
-                    <label for="subject_select" class="block text-sm font-semibold text-slate-700">Target Subject</label>
+                    <label for="subject_select" class="block text-sm font-semibold text-slate-700">Target
+                        Subject</label>
                     <select name="subject_id" id="subject_select" onchange="handleSubjectSelect(this)" required
                         class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all outline-none bg-white">
                         <option value="" disabled selected>Select a subject</option>
@@ -24,15 +26,16 @@
                         </optgroup>
                         {% endif %}
                         {% if default_subjects %}
-                        <optgroup label="── Default Subjects (will be added to DB) ──">
+                        <optgroup label="── Default Subjects ──">
                             {% for dname in default_subjects %}
-                            <option value="" data-default-name="{{ dname }}">{{ dname }}</option>
+                            <option value="default_{{ loop.index }}" data-default-name="{{ dname }}">{{ dname }}</option>
                             {% endfor %}
                         </optgroup>
                         {% endif %}
                     </select>
                     <input type="hidden" name="subject_name" id="subject_name_hidden" value="">
-                    <p class="text-[10px] text-slate-400">Selecting a "Default Subject" will automatically add it to the database.</p>
+                    <p class="text-[10px] text-slate-400">Selecting a "Default Subject" will automatically add it to the
+                        database.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -63,7 +66,8 @@
 
                 <!-- Auto-config preview card -->
                 <div id="quiz-preview" class="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl">
-                    <p class="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-3">Quiz Configuration Preview</p>
+                    <p class="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-3">Quiz Configuration
+                        Preview</p>
                     <div class="grid grid-cols-3 gap-4">
                         <div class="text-center">
                             <p class="text-2xl font-black text-indigo-600" id="preview-questions">10</p>
@@ -78,7 +82,8 @@
                             <p class="text-[10px] text-indigo-500 font-semibold uppercase tracking-wider">Level</p>
                         </div>
                     </div>
-                    <p class="text-[10px] text-indigo-400 mt-3 text-center">These are auto-configured based on your difficulty selection.</p>
+                    <p class="text-[10px] text-indigo-400 mt-3 text-center">These are auto-configured based on your
+                        difficulty selection.</p>
                 </div>
 
                 <!-- API Key Warning -->
@@ -90,7 +95,8 @@
                     </svg>
                     <div>
                         <p class="text-xs font-bold text-amber-800">API Key Missing</p>
-                        <p class="text-[10px] text-amber-700 leading-tight">Please ensure GOOGLE_API_KEY is set in your environment variables for this feature to work.</p>
+                        <p class="text-[10px] text-amber-700 leading-tight">Please ensure GOOGLE_API_KEY is set in your
+                            environment variables for this feature to work.</p>
                     </div>
                 </div>
                 {% endif %}
@@ -116,9 +122,9 @@
 
 <script>
     const DIFFICULTY_CONFIG = {
-        'Easy':   { questions: 5,  time: '5 min',  duration: '00:05' },
+        'Easy': { questions: 5, time: '5 min', duration: '00:05' },
         'Medium': { questions: 10, time: '10 min', duration: '00:10' },
-        'High':   { questions: 15, time: '15 min', duration: '00:15' },
+        'High': { questions: 15, time: '15 min', duration: '00:15' },
     };
 
     function updatePreview() {
@@ -134,7 +140,6 @@
         const defaultName = selectedOption.getAttribute('data-default-name');
         const hiddenName = document.getElementById('subject_name_hidden');
         if (defaultName) {
-            selectEl.value = '';
             hiddenName.value = defaultName;
         } else {
             hiddenName.value = '';
@@ -142,6 +147,11 @@
     }
 
     document.querySelector('form').addEventListener('submit', function () {
+        const selectEl = document.getElementById('subject_select');
+        const selectedOption = selectEl.options[selectEl.selectedIndex];
+        if (selectedOption && selectedOption.getAttribute('data-default-name')) {
+            selectEl.removeAttribute('name'); // prevents sending invalid subject_id to server
+        }
         document.getElementById('loading-overlay').style.display = 'flex';
     });
 
