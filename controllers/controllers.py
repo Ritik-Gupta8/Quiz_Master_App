@@ -240,6 +240,7 @@ def generate_ai_quiz():
         # Create a new Quiz
         new_quiz = Quiz(
             subject_id=subject.id,
+            creator_id=current_user.id,
             topic=topic,
             date_of_quiz=date.today(),
             no_of_questions=len(results),
@@ -309,6 +310,7 @@ def user_generate_ai_quiz():
     # Create the Quiz
     new_quiz = Quiz(
         subject_id=subject.id,
+        creator_id=current_user.id,
         topic=topic,
         date_of_quiz=date.today(),
         no_of_questions=len(results),
@@ -409,13 +411,20 @@ def admin_summary():
 @app.route("/user")
 @role_required("user")
 def user_dashboard():
-    quizzes = Quiz.query.join(Question).group_by(Quiz.id).all()
+    quizzes = Quiz.query.filter_by(creator_id=current_user.id).all()
     dt_time_now = date.today()
     # Merge DB subjects with default subjects for the quiz generator dropdown
     db_subjects = Subject.query.all()
     db_subject_names_lower = {s.name.lower() for s in db_subjects}
     extra_defaults = [s for s in DEFAULT_SUBJECTS if s.lower() not in db_subject_names_lower]
     return render_template("user_dashboard.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now, db_subjects=db_subjects, default_subjects=extra_defaults)
+
+@app.route("/explore_quizzes")
+@role_required("user")
+def explore_quizzes():
+    quizzes = Quiz.query.all()
+    dt_time_now = date.today()
+    return render_template("explore_quizzes.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now)
 
 MAX_QUIZ_ATTEMPTS = 3
 
@@ -583,6 +592,34 @@ def view_score():
     return render_template("view_score.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now,
                            scores=best_scores, attempt_counts=attempt_counts, max_attempts=MAX_QUIZ_ATTEMPTS,
                            all_scores_by_quiz=all_scores_by_quiz)
+
+@app.route("/review_quiz/<qid>")
+@role_required("user")
+def review_quiz(qid):
+    quiz = Quiz.query.get_or_404(qid)
+    
+    # Verify user has completed max attempts
+    all_attempts = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id).all()
+    completed_attempts = [a for a in all_attempts if a.status in ["submitted", "expired"]]
+    
+    if len(completed_attempts) < MAX_QUIZ_ATTEMPTS:
+        flash("You can only review answers after using all your attempts.", "warning")
+        return redirect(url_for("view_score"))
+        
+    # Get the latest attempt
+    latest_attempt = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id, status="submitted").order_by(QuizAttempt.end_time.desc()).first()
+    
+    if not latest_attempt:
+        latest_attempt = QuizAttempt.query.filter_by(quiz_id=qid, user_id=current_user.id, status="expired").order_by(QuizAttempt.end_time.desc()).first()
+        
+    if not latest_attempt:
+        flash("No completed attempts found to review.", "warning")
+        return redirect(url_for("view_score"))
+        
+    questions = Question.query.filter_by(quiz_id=qid).all()
+    answers = json.loads(latest_attempt.answers)
+    
+    return render_template("review_quiz.html", user=current_user, quiz=quiz, questions=questions, answers=answers, attempt=latest_attempt)
 
 @app.route("/user_search", methods=["GET", "POST"])
 @role_required("user")
