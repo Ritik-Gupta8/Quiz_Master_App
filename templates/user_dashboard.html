@@ -75,13 +75,13 @@
     </div>
 
     <div class="pt-4 border-t border-slate-100">
-        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Scheduled Quizzes</h2>
+        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">My Quizzes</h2>
+        <p class="text-slate-500 text-sm mt-1">Quizzes you have generated.</p>
     </div>
 
     {% if quizzes %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for quiz in quizzes %}
-        {% if quiz.date_of_quiz >= dt_time_now %}
         <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1 group">
             <div class="p-6 space-y-4">
                 <div class="flex items-start justify-between">
@@ -99,7 +99,7 @@
                         <h3 class="text-xl font-bold text-slate-900 leading-tight group-hover:text-indigo-600 transition-colors">{{ quiz.topic }}</h3>
                     </div>
                     <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-indigo-500 transition-colors">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253"/></svg>
                     </div>
                 </div>
 
@@ -126,7 +126,6 @@
                 </div>
             </div>
         </div>
-        {% endif %}
         {% endfor %}
     </div>
     {% else %}
@@ -134,8 +133,8 @@
         <div class="mx-auto h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
              <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
-        <h3 class="text-xl font-bold text-slate-900">No Active Quizzes</h3>
-        <p class="text-slate-500 mt-2 max-w-sm mx-auto">There are no quizzes scheduled for you at the moment. Check back later or contact your instructor.</p>
+        <h3 class="text-xl font-bold text-slate-900">No Custom Quizzes Yet</h3>
+        <p class="text-slate-500 mt-2 max-w-sm mx-auto">You haven't generated any quizzes yet. Use the tool above to create one!</p>
     </div>
     {% endif %}
 </div>
