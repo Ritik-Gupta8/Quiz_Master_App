@@ -2,7 +2,10 @@ import google.generativeai as genai
 import os
 import json
 import time
+import hashlib
+from datetime import datetime
 from dotenv import load_dotenv
+from models.models import db, QuizCache
 
 # Load environment variables from .env if present
 load_dotenv()
@@ -46,15 +49,50 @@ def _try_generate(model_name, prompt):
     return None, "Empty response from model."
 
 
+def validate_questions(questions, num_questions):
+    if not isinstance(questions, list):
+        return False, "Not a JSON array."
+    if len(questions) != num_questions:
+        return False, f"Expected {num_questions} questions, got {len(questions)}."
+    
+    required_keys = {"question_statement", "option1", "option2", "option3", "option4", "correct_option"}
+    valid_options = {"option1", "option2", "option3", "option4"}
+    
+    for i, q in enumerate(questions):
+        if not isinstance(q, dict):
+            return False, f"Question {i+1} is not a JSON object."
+        
+        missing_keys = required_keys - set(q.keys())
+        if missing_keys:
+            return False, f"Question {i+1} is missing keys: {', '.join(missing_keys)}"
+            
+        if q["correct_option"] not in valid_options:
+            return False, f"Question {i+1} has invalid correct_option: {q.get('correct_option')}."
+            
+    return True, "Valid"
+
 def generate_quiz_questions(subject, chapter, num_questions=10, level="Medium", grade="10th"):
     """Generate quiz questions using Gemini AI.
     Returns a list of dicts with keys:
     question_statement, option1, option2, option3, option4, correct_option.
     Falls back across multiple model IDs when quota is exceeded.
+    Caches successful generations to save API quota.
     """
     api_key = get_api_key()
     if not api_key:
         return {"error": "Google API Key (GOOGLE_API_KEY) not found. Ensure your .env file is set up correctly."}
+
+    # 1. Check cache first
+    hash_key = f"{subject}|{chapter}|{num_questions}|{level}|{grade}".lower()
+    prompt_hash = hashlib.sha256(hash_key.encode()).hexdigest()
+    
+    cached_quiz = QuizCache.query.filter_by(prompt_hash=prompt_hash).first()
+    if cached_quiz:
+        try:
+            questions = json.loads(cached_quiz.generated_json)
+            return questions
+        except json.JSONDecodeError:
+            pass # Invalid cache data, ignore and regenerate
 
     genai.configure(api_key=api_key)
 
@@ -89,9 +127,54 @@ def generate_quiz_questions(subject, chapter, num_questions=10, level="Medium", 
             # Parse JSON
             try:
                 questions = json.loads(content)
-                if isinstance(questions, list) and len(questions) > 0:
+                is_valid, val_err = validate_questions(questions, num_questions)
+                if is_valid:
+                    # Cache successful result
+                    new_cache = QuizCache(
+                        prompt_hash=prompt_hash,
+                        generated_json=json.dumps(questions),
+                        timestamp=datetime.utcnow()
+                    )
+                    db.session.add(new_cache)
+                    db.session.commit()
                     return questions  # success
-                last_error = f"{model_name}: Returned empty or non-list JSON."
+                    
+                # Format was invalid, try a repair prompt exactly once for this model
+                repair_prompt = (
+                    f"Your previous output was invalid.\n"
+                    f"Errors: {val_err}\n\n"
+                    f"Previous Output:\n{content}\n\n"
+                    f"Please fix the errors and provide EXACTLY {num_questions} multiple-choice questions "
+                    f"for Grade {grade} students on Subject: {subject}, Topic: {chapter}, Difficulty: {level}.\n"
+                    f"Return ONLY a JSON array. Each element must have these exact keys: "
+                    f"question_statement, option1, option2, option3, option4, correct_option "
+                    f"(correct_option must be one of: 'option1', 'option2', 'option3', 'option4')."
+                )
+                
+                rep_content, rep_err = _try_generate(model_name, repair_prompt)
+                if not rep_err:
+                    rep_content = rep_content.strip()
+                    if rep_content.startswith("```json"):
+                        rep_content = rep_content[len("```json"):].strip()
+                    elif rep_content.startswith("```"):
+                        rep_content = rep_content[3:].strip()
+                    if rep_content.endswith("```"):
+                        rep_content = rep_content[:-3].strip()
+                        
+                    rep_questions = json.loads(rep_content)
+                    is_valid_rep, val_err_rep = validate_questions(rep_questions, num_questions)
+                    if is_valid_rep:
+                        # Cache successful result
+                        new_cache = QuizCache(
+                            prompt_hash=prompt_hash,
+                            generated_json=json.dumps(rep_questions),
+                            timestamp=datetime.utcnow()
+                        )
+                        db.session.add(new_cache)
+                        db.session.commit()
+                        return rep_questions
+
+                last_error = f"{model_name}: Output validation failed — {val_err}"
                 continue
             except json.JSONDecodeError as jde:
                 last_error = f"{model_name}: JSON parse error — {jde.msg}"
