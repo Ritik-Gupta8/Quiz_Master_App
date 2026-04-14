@@ -70,6 +70,10 @@
                                 <a href="{{ url_for('start_quiz', qid=quiz.id) }}"
                                    onclick="event.stopPropagation()"
                                    class="text-[10px] font-bold text-indigo-600 hover:underline whitespace-nowrap">Retry →</a>
+                                {% else %}
+                                <a href="{{ url_for('review_quiz', qid=quiz.id) }}"
+                                   onclick="event.stopPropagation()"
+                                   class="text-[10px] font-bold text-teal-600 hover:underline whitespace-nowrap">Review Answers →</a>
                                 {% endif %}
                             </div>
                         </td>
