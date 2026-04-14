@@ -11,6 +11,7 @@ class User(db.Model, UserMixin):
     qualification = db.Column(db.String(255), nullable=True)
 
     scores = db.relationship("Score", cascade="all,delete", backref="user", lazy=True)
+    quizzes_created = db.relationship("Quiz", backref="creator", lazy=True)
 
     def __repr__(self):
         return f"<User {self.id}: {self.full_name}>"
@@ -28,6 +29,7 @@ class Subject(db.Model):
 class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     subject_id = db.Column(db.Integer, db.ForeignKey("subject.id"), nullable=False)
+    creator_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     topic = db.Column(db.String(255), nullable=False, default="General AI Quiz")
     date_of_quiz = db.Column(db.Date, nullable=False)
     time_duration = db.Column(db.String(50), nullable=False)
@@ -73,3 +75,12 @@ class QuizAttempt(db.Model):
 
     def __repr__(self):
         return f"<QuizAttempt {self.id}: user={self.user_id}, quiz={self.quiz_id}, status={self.status}>"
+
+class QuizCache(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    prompt_hash = db.Column(db.String(255), unique=True, nullable=False)
+    generated_json = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
+
+    def __repr__(self):
+        return f"<QuizCache {self.id}: hash={self.prompt_hash}>"
