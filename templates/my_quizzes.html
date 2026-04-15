@@ -20,7 +20,6 @@
                 <div class="flex items-start justify-between">
                     <div class="space-y-1">
                         <div class="flex items-center flex-wrap gap-1.5">
-                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-600 uppercase tracking-wider">{{ quiz.subject.name }}</span>
                             {% if quiz.difficulty == 'Easy' %}
                             <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase tracking-wider">Easy</span>
                             {% elif quiz.difficulty == 'Medium' %}
@@ -30,7 +29,7 @@
                             {% endif %}
                             <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-700 uppercase tracking-wider">Yours</span>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900 leading-tight group-hover:text-indigo-600 transition-colors">{{ quiz.topic }}</h3>
+                        <h3 class="text-xl font-bold text-slate-900 leading-tight group-hover:text-indigo-600 transition-colors">{{ quiz.formatted_topic }}</h3>
                     </div>
                     <div class="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-indigo-500 transition-colors">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
