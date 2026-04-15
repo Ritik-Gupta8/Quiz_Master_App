@@ -38,6 +38,7 @@ class Quiz(db.Model):
 
     questions = db.relationship("Question", cascade="all,delete", backref="quiz", lazy=True)
     scores = db.relationship("Score", cascade="all,delete", backref="quiz", lazy=True)
+    attempts = db.relationship("QuizAttempt", cascade="all,delete", backref="quiz", lazy=True)
 
     def __repr__(self):
         return f"<Quiz {self.id}: subject={self.subject_id}, topic={self.topic}>"
