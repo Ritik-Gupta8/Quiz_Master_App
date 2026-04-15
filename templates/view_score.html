@@ -39,8 +39,7 @@
                         onclick="toggleHistory('history-{{ quiz.id }}', this)">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex flex-col">
-                                <span class="text-xs font-bold text-indigo-600 uppercase">{{ quiz.subject.name }}</span>
-                                <span class="text-sm font-bold text-slate-900">{{ quiz.topic }}</span>
+                                <span class="text-sm font-bold text-slate-900">{{ quiz.formatted_topic }}</span>
                                 {% if quiz.difficulty == 'Easy' %}
                                 <span class="mt-1 self-start px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-700">Easy</span>
                                 {% elif quiz.difficulty == 'Medium' %}
