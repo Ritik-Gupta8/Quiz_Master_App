@@ -674,7 +674,7 @@ def user_summary():
     quiz_history = []
     for a in recent_attempts:
         quiz_history.append({
-            "quiz": a.quiz.topic,
+            "quiz": a.quiz.formatted_topic,
             "score": a.final_score,
             "total": a.quiz.no_of_questions
         })
@@ -705,7 +705,7 @@ def user_summary():
     for a in trend_attempts:
         duration = (a.end_time - a.start_time).total_seconds() / 60.0
         time_data.append({
-            "quiz": a.quiz.topic,
+            "quiz": a.quiz.formatted_topic,
             "minutes": round(duration, 2)
         })
 
