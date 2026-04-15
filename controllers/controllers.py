@@ -385,6 +385,7 @@ def admin_summary():
     for s in subjects:
         # Calculate average percentage score for this subject
         avg = db.session.query(func.avg(Score.total_score * 100.0 / Quiz.no_of_questions))\
+            .select_from(Score)\
             .join(Quiz, Score.quiz_id == Quiz.id)\
             .filter(Quiz.subject_id == s.id).scalar() or 0
         subject_performance.append({"name": s.name, "value": round(float(avg), 2)})
@@ -394,6 +395,7 @@ def admin_summary():
     difficulty_performance = []
     for d in difficulties:
         avg = db.session.query(func.avg(Score.total_score * 100.0 / Quiz.no_of_questions))\
+            .select_from(Score)\
             .join(Quiz, Score.quiz_id == Quiz.id)\
             .filter(Quiz.difficulty == d).scalar() or 0
         difficulty_performance.append({"name": d, "value": round(float(avg), 2)})
@@ -411,20 +413,40 @@ def admin_summary():
 @app.route("/user")
 @role_required("user")
 def user_dashboard():
-    quizzes = Quiz.query.filter_by(creator_id=current_user.id).all()
     dt_time_now = date.today()
     # Merge DB subjects with default subjects for the quiz generator dropdown
     db_subjects = Subject.query.all()
     db_subject_names_lower = {s.name.lower() for s in db_subjects}
     extra_defaults = [s for s in DEFAULT_SUBJECTS if s.lower() not in db_subject_names_lower]
-    return render_template("user_dashboard.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now, db_subjects=db_subjects, default_subjects=extra_defaults)
+    return render_template("user_dashboard.html", user=current_user, dt_time_now=dt_time_now, db_subjects=db_subjects, default_subjects=extra_defaults)
+
+@app.route("/my_quizzes")
+@role_required("user")
+def my_quizzes():
+    quizzes = Quiz.query.filter_by(creator_id=current_user.id).order_by(Quiz.id.desc()).all()
+    dt_time_now = date.today()
+    return render_template("my_quizzes.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now)
 
 @app.route("/explore_quizzes")
 @role_required("user")
 def explore_quizzes():
-    quizzes = Quiz.query.all()
+    quizzes = Quiz.query.order_by(Quiz.id.desc()).all()
     dt_time_now = date.today()
     return render_template("explore_quizzes.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now)
+
+@app.route("/completed_quizzes")
+@role_required("user")
+def completed_quizzes():
+    all_quizzes = Quiz.query.order_by(Quiz.id.desc()).all()
+    completed = []
+    for quiz in all_quizzes:
+        attempts_count = QuizAttempt.query.filter_by(quiz_id=quiz.id, user_id=current_user.id).filter(
+            QuizAttempt.status.in_(["submitted", "expired"])).count()
+        if attempts_count >= MAX_QUIZ_ATTEMPTS:
+            completed.append(quiz)
+            
+    dt_time_now = date.today()
+    return render_template("completed_quizzes.html", user=current_user, quizzes=completed, dt_time_now=dt_time_now)
 
 MAX_QUIZ_ATTEMPTS = 3
 
@@ -673,6 +695,7 @@ def user_summary():
     subject_scores = []
     for s in subjects:
         avg = db.session.query(func.avg(QuizAttempt.final_score * 100.0 / Quiz.no_of_questions))\
+            .select_from(QuizAttempt)\
             .join(Quiz, QuizAttempt.quiz_id == Quiz.id)\
             .filter(QuizAttempt.user_id == user_id, Quiz.subject_id == s.id, QuizAttempt.status == "submitted").scalar() or 0
         subject_scores.append({"name": s.name, "value": round(float(avg), 2)})
