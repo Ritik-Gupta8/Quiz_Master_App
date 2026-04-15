@@ -40,6 +40,13 @@ class Quiz(db.Model):
     scores = db.relationship("Score", cascade="all,delete", backref="quiz", lazy=True)
     attempts = db.relationship("QuizAttempt", cascade="all,delete", backref="quiz", lazy=True)
 
+    @property
+    def formatted_topic(self):
+        if "AI Quiz (" in self.topic or "AI Practice (" in self.topic:
+            grade_part = self.topic.split('(')[-1].replace(')', '')
+            return f"{self.subject.name} - {grade_part}"
+        return f"{self.subject.name} - {self.topic}"
+
     def __repr__(self):
         return f"<Quiz {self.id}: subject={self.subject_id}, topic={self.topic}>"
 
