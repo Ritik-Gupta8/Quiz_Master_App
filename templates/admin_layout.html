@@ -22,13 +22,13 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-indigo-50 min-h-screen flex flex-col">
     <nav class="sticky top-0 z-50 glass border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center space-x-8">
                     <div class="flex-shrink-0 flex items-center">
-                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-teal-500">
+                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
                             QuizMaster
                         </span>
                     </div>
@@ -87,7 +87,7 @@
         {% endwith %}
     </div>
 
-    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <main class="flex-grow max-w-7xl mx-auto w-full py-8 px-4 sm:px-6 lg:px-8">
         {% block content %}{% endblock %}
     </main>
 
@@ -95,10 +95,10 @@
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center space-x-2">
-                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-teal-500">
+                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
                         QuizMaster
                     </span>
-                    <span class="text-slate-400 text-sm">Quiz Master Developed by Ritik Gupta</span>
+                    <span class="text-slate-400 text-sm">Developed by Ritik Gupta</span>
                 </div>
                 <div class="flex space-x-6 text-sm text-slate-500">
                     <a href="#" class="hover:text-indigo-600 transition-colors">Documentation</a>
