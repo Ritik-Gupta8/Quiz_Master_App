@@ -1,0 +1,168 @@
+from flask import render_template, request, url_for, redirect, flash
+from flask_login import current_user
+from datetime import datetime, date
+import os
+from models.models import db, Subject, Quiz, User, Question
+from routes.utils import role_required
+from services.ai_service import generate_quiz_questions
+
+DEFAULT_SUBJECTS = ["Physics", "Mathematics", "General Knowledge", "Chemistry", "Biology", "English"]
+
+def init_admin_routes(app):
+    @app.route("/admin")
+    @role_required("admin")
+    def admin_dashboard():
+        subjects = Subject.query.all()
+        return render_template("admin_dashboard.html", subjects=subjects)
+
+    @app.route('/user_details')
+    @role_required("admin")
+    def user_deatils():
+        users = User.query.filter(User.role != 0).all()  
+        return render_template('user_details.html', users=users)
+
+    @app.route("/subject", methods=["POST", "GET"])
+    @role_required("admin")
+    def add_subject():
+        if request.method == "POST":
+            sname = request.form.get("name").strip()
+            description = request.form.get("description")
+
+            existing = Subject.query.filter(Subject.name.ilike(sname)).first()
+            if existing:
+                flash(f"Subject '{existing.name}' already exists in the database!", "warning")
+                return render_template("add_subject.html", subject_exists=True, existing_name=existing.name)
+
+            new_subject = Subject(name=sname, description=description)
+            db.session.add(new_subject)
+            db.session.commit()
+            flash(f"Subject '{sname}' added successfully!", "success")
+            return redirect(url_for("admin_dashboard"))
+
+        return render_template("add_subject.html")
+
+    @app.route("/edit_subject/<id>", methods=["GET", "POST"])
+    @role_required("admin")
+    def edit_subject(id):
+        s = Subject.query.filter_by(id=id).first()
+        if request.method == "POST":
+            s.name = request.form.get("sname")
+            s.description = request.form.get("description")
+            db.session.commit()
+            return redirect(url_for("admin_dashboard"))
+        
+        return render_template("edit_subject.html", subject=s)
+
+    @app.route("/delete_subject/<id>", methods=["GET", "POST"])
+    @role_required("admin")
+    def delete_subject(id):
+        s = Subject.query.filter_by(id=id).first()
+        if s:
+            db.session.delete(s)
+            db.session.commit()
+        return redirect(url_for("admin_dashboard"))
+
+    @app.route("/quiz_management")
+    @role_required("admin")
+    def quiz_management():
+        quizzes = Quiz.query.all()
+        return render_template("quiz_management.html", quizzes=quizzes)
+
+    @app.route("/edit_quiz/<id>", methods=["GET", "POST"])
+    @role_required("admin")
+    def edit_quiz(id):
+        q = Quiz.query.filter_by(id=id).first()
+    
+        if request.method == "POST":
+            q.subject_id = request.form.get("subject_id")
+            q.topic = request.form.get("topic", "General Topic")
+            date_of_quiz = request.form.get("date_of_quiz")
+            q.date_of_quiz = datetime.strptime(date_of_quiz, "%Y-%m-%d").date()
+            q.time_duration = request.form.get("time_duration")
+            q.no_of_questions = request.form.get("no_of_questions")
+            q.difficulty = request.form.get("difficulty", "Medium")
+            db.session.commit()
+            return redirect(url_for("quiz_management"))
+        
+        subjects = Subject.query.all()
+        return render_template("edit_quiz.html", quiz=q, subjects=subjects)
+
+    @app.route("/delete_quiz/<id>", methods=["GET", "POST"])
+    @role_required("admin")
+    def delete_quiz(id):  
+        q = Quiz.query.filter_by(id=id).first()
+        if q:
+            db.session.delete(q)
+            db.session.commit()
+        return redirect(url_for("quiz_management"))
+
+    @app.route("/generate_ai_quiz", methods=["GET", "POST"])
+    @role_required("admin")
+    def generate_ai_quiz():
+        DIFFICULTY_CONFIG = {
+            "Easy":   (5,  "00:05"),
+            "Medium": (10, "00:10"),
+            "High":   (15, "00:15"),
+        }
+
+        if request.method == "POST":
+            subject_name = request.form.get("subject_name", "").strip()
+            subject_id = request.form.get("subject_id", "").strip()
+            level = request.form.get("level", "Medium")
+            grade = request.form.get("grade", "10th")
+
+            num_questions, time_duration = DIFFICULTY_CONFIG.get(level, (10, "00:10"))
+            topic = f"AI Quiz ({grade} Grade)"
+
+            if subject_id:
+                subject = Subject.query.get_or_404(subject_id)
+            elif subject_name:
+                subject = Subject.query.filter(Subject.name.ilike(subject_name)).first()
+                if not subject:
+                    subject = Subject(name=subject_name, description=f"AI Generated Subject for {subject_name}")
+                    db.session.add(subject)
+                    db.session.flush()
+            else:
+                flash("Please select or enter a subject.", "error")
+                return redirect(url_for("generate_ai_quiz"))
+
+            results = generate_quiz_questions(subject.name, "General Topics", num_questions, level, grade)
+
+            if isinstance(results, dict) and "error" in results:
+                flash(f"AI Generation Failed: {results['error']}", "error")
+                return redirect(url_for("generate_ai_quiz"))
+
+            new_quiz = Quiz(
+                subject_id=subject.id,
+                creator_id=current_user.id,
+                topic=topic,
+                date_of_quiz=date.today(),
+                no_of_questions=len(results),
+                time_duration=time_duration,
+                difficulty=level
+            )
+            db.session.add(new_quiz)
+            db.session.flush()
+
+            for q_data in results:
+                new_question = Question(
+                    question_statement=q_data.get("question_statement"),
+                    question_type="MCQ",
+                    quiz_id=new_quiz.id,
+                    option1=q_data.get("option1"),
+                    option2=q_data.get("option2"),
+                    option3=q_data.get("option3"),
+                    option4=q_data.get("option4"),
+                    correct_option=q_data.get("correct_option")
+                )
+                db.session.add(new_question)
+
+            db.session.commit()
+            flash(f"Quiz generated for {subject.name} ({level}) — {len(results)} questions, {time_duration} duration!", "success")
+            return redirect(url_for("quiz_management"))
+
+        db_subjects = Subject.query.all()
+        db_subject_names_lower = {s.name.lower() for s in db_subjects}
+        extra_defaults = [s for s in DEFAULT_SUBJECTS if s.lower() not in db_subject_names_lower]
+        has_api_key = os.environ.get("GOOGLE_API_KEY") is not None
+        return render_template("generate_ai_quiz.html", subjects=db_subjects, default_subjects=extra_defaults, has_api_key=has_api_key)
