@@ -22,7 +22,7 @@
         }
     </style>
 </head>
-<body class="bg-indigo-50 min-h-screen">
+<body class="bg-indigo-50 min-h-screen flex flex-col">
     <nav class="sticky top-0 z-50 glass border-b border-indigo-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
@@ -36,6 +36,7 @@
                         <a href="{{ url_for('user_dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Home</a>
                         <a href="{{ url_for('my_quizzes') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">My Quizzes</a>
                         <a href="{{ url_for('explore_quizzes') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Explore Quizzes</a>
+                        <a href="{{ url_for('leaderboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm transition-all border border-transparent hover:border-indigo-100">🏆 Leaderboard</a>
                         <a href="{{ url_for('completed_quizzes') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Completed Quizzes</a>
                         <a href="{{ url_for('view_score') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">My Scores</a>
                         <a href="{{ url_for('user_summary') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Progress</a>
@@ -59,6 +60,7 @@
                 <a href="{{ url_for('user_dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Home</a>
                 <a href="{{ url_for('my_quizzes') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">My Quizzes</a>
                 <a href="{{ url_for('explore_quizzes') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Explore Quizzes</a>
+                <a href="{{ url_for('leaderboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-all">🏆 Leaderboard</a>
                 <a href="{{ url_for('completed_quizzes') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Completed Quizzes</a>
                 <a href="{{ url_for('view_score') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">My Scores</a>
                 <a href="{{ url_for('user_summary') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Progress</a>
@@ -90,7 +92,7 @@
         {% endwith %}
     </div>
 
-    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <main class="flex-grow max-w-7xl mx-auto w-full py-8 px-4 sm:px-6 lg:px-8">
         {% block content %}{% endblock %}
     </main>
 
@@ -101,7 +103,7 @@
                     <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
                         QuizMaster
                     </span>
-                    <span class="text-slate-400 text-sm">Quiz Master Developed by Ritik Gupta</span>
+                    <span class="text-slate-400 text-sm">Developed by Ritik Gupta</span>
                 </div>
                 <div class="flex space-x-6 text-sm text-slate-500">
                     <a href="#" class="hover:text-indigo-600 transition-colors">Help Center</a>
