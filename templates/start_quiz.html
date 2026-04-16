@@ -59,13 +59,13 @@
         {% for question in questions %}
         <div
             class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden transform transition-all hover:shadow-2xl">
-            <div class="p-10 space-y-8">
+            <div class="px-6 py-8 md:p-8 space-y-6">
                 <div class="flex items-start gap-6">
                     <span
-                        class="flex-shrink-0 h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-lg font-black text-indigo-600 shadow-inner">
+                        class="flex-shrink-0 h-10 w-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-base font-black text-indigo-600 shadow-inner">
                         {{ loop.index }}
                     </span>
-                    <h5 class="text-xl font-bold text-slate-800 pt-1.5 leading-relaxed">{{ question.question_statement
+                    <h5 class="text-lg font-bold text-slate-800 pt-1.5 leading-relaxed">{{ question.question_statement
                         }}</h5>
                 </div>
 
@@ -74,12 +74,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pl-0 md:pl-16">
                     {% for option in [question.option1, question.option2, question.option3, question.option4] %}
                     <label
-                        class="relative flex items-center p-5 rounded-2xl border-2 border-slate-50 bg-slate-50/50 hover:border-indigo-500 hover:bg-white cursor-pointer transition-all group shadow-sm hover:shadow-lg">
+                        class="relative flex items-center p-4 rounded-xl border-2 border-slate-50 bg-slate-50/50 hover:border-indigo-500 hover:bg-white cursor-pointer transition-all group shadow-sm hover:shadow-md">
                         <input type="radio" name="answer_{{ question.id }}" value="{{ option }}" required {% if
                             current_answers.get(question.id|string)==option %}checked{% endif %}
                             onchange="saveProgress('{{ question.id }}', '{{ option }}')"
-                            class="h-6 w-6 text-indigo-600 border-slate-300 focus:ring-offset-2 focus:ring-indigo-500 transition-all cursor-pointer">
-                        <span class="ml-4 text-slate-700 font-bold group-hover:text-indigo-900 transition-colors">{{
+                            class="h-5 w-5 text-indigo-600 border-slate-300 focus:ring-offset-2 focus:ring-indigo-500 transition-all cursor-pointer">
+                        <span class="ml-3 text-sm text-slate-700 font-bold group-hover:text-indigo-900 transition-colors">{{
                             option }}</span>
                     </label>
                     {% endfor %}
