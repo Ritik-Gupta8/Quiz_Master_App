@@ -57,7 +57,20 @@ def create_admin():
 
 setup_app()
 
-from controllers.controllers import *
+from routes.auth_routes import init_auth_routes
+from routes.admin_routes import init_admin_routes
+from routes.user_routes import init_user_routes
+from routes.quiz_routes import init_quiz_routes
+from routes.analytics_routes import init_analytics_routes
+from routes.api_routes import init_api_routes
+
+# Initialize all route modules cleanly
+init_auth_routes(app)
+init_admin_routes(app)
+init_user_routes(app)
+init_quiz_routes(app)
+init_analytics_routes(app)
+init_api_routes(app)
 
 # AI Generation system is now configured and ready for local use
 if __name__ == "__main__":
