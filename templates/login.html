@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,92 +8,109 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles/main.css">
     <title>Login | Quiz Master</title>
-    <meta name="description" content="Login to Quiz Master to access your dashboard, take quizzes, and track your learning progress.">
+    <meta name="description"
+        content="Login to Quiz Master to access your dashboard, take quizzes, and track your learning progress.">
     <style>
-        body { font-family: 'Outfit', sans-serif; }
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">
-            Welcome back to <span class="text-indigo-600">QuizMaster</span>
-        </h1>
-        <p class="mt-2 text-sm text-slate-600">
-            Login to continue your learning journey
-        </p>
-    </div>
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
-        <div class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 rounded-3xl sm:px-10 border border-slate-100">
-            <form action="/login" method="POST" class="space-y-6">
-                <div>
-                    <label for="user_name" class="block text-sm font-semibold text-slate-700">Email Address</label>
-                    <div class="mt-1">
-                        <input id="user_name" name="user_name" type="email" autocomplete="email" required 
-                               placeholder="name@example.com"
-                               class="appearance-none block w-full px-4 py-3 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm">
+<body class="bg-slate-50 min-h-screen flex flex-col">
+    <div class="flex-grow flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">
+                Welcome back to <span class="text-indigo-600">QuizMaster</span>
+            </h1>
+            <p class="mt-2 text-sm text-slate-600">
+                Login to continue your learning journey
+            </p>
+        </div>
+
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
+            <div class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 rounded-3xl sm:px-10 border border-slate-100">
+                <form action="/login" method="POST" class="space-y-6">
+                    <div>
+                        <label for="user_name" class="block text-sm font-semibold text-slate-700">Email Address</label>
+                        <div class="mt-1">
+                            <input id="user_name" name="user_name" type="email" autocomplete="email" required
+                                placeholder="name@example.com"
+                                class="appearance-none block w-full px-4 py-3 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm">
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
-                    <div class="mt-1">
-                        <input id="password" name="password" type="password" autocomplete="current-password" required 
-                               placeholder="••••••••"
-                               class="appearance-none block w-full px-4 py-3 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm">
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
+                        <div class="mt-1">
+                            <input id="password" name="password" type="password" autocomplete="current-password"
+                                required placeholder="••••••••"
+                                class="appearance-none block w-full px-4 py-3 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all sm:text-sm">
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
-                        Sign in
-                    </button>
-                </div>
-            </form>
+                    <div>
+                        <button type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
+                            Sign in
+                        </button>
+                    </div>
+                </form>
 
-            <div class="mt-6 text-center">
-                <p class="text-sm text-slate-600">
-                    New here? <a href="/register" class="font-bold text-indigo-600 hover:text-indigo-500">Create an account</a>
-                </p>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                  {% if messages %}
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-slate-600">
+                        New here? <a href="/register" class="font-bold text-indigo-600 hover:text-indigo-500">Create an
+                            account</a>
+                    </p>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
                     <div class="mt-4 space-y-2">
-                    {% for category, message in messages %}
-                      {% if category == 'danger' or category == 'error' %}
+                        {% for category, message in messages %}
+                        {% if category == 'danger' or category == 'error' %}
                         <div class="p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">
                             {{ message }}
                         </div>
-                      {% elif category == 'success' %}
-                        <div class="p-3 rounded-lg bg-emerald-50 text-emerald-600 text-sm font-medium border border-emerald-100">
+                        {% elif category == 'success' %}
+                        <div
+                            class="p-3 rounded-lg bg-emerald-50 text-emerald-600 text-sm font-medium border border-emerald-100">
                             {{ message }}
                         </div>
-                      {% else %}
-                        <div class="p-3 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-medium border border-indigo-100">
+                        {% else %}
+                        <div
+                            class="p-3 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-medium border border-indigo-100">
                             {{ message }}
                         </div>
-                      {% endif %}
-                    {% endfor %}
+                        {% endif %}
+                        {% endfor %}
                     </div>
-                  {% endif %}
-                {% endwith %}
-                
-                {% if msg %}
-                <div class="mt-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">
-                    {{msg}}
+                    {% endif %}
+                    {% endwith %}
+
+                    {% if msg %}
+                    <div class="mt-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">
+                        {{msg}}
+                    </div>
+                    {% endif %}
+                    {% if msg1 %}
+                    <div
+                        class="mt-4 p-3 rounded-lg bg-emerald-50 text-emerald-600 text-sm font-medium border border-emerald-100">
+                        {{msg1}}
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-                {% if msg1 %}
-                <div class="mt-4 p-3 rounded-lg bg-emerald-50 text-emerald-600 text-sm font-medium border border-emerald-100">
-                    {{msg1}}
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
     <footer class="mt-auto py-8 border-t border-slate-200 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-slate-500">Quiz Master Developed by Ritik Gupta</p>
+                <div class="flex items-center space-x-2">
+                    <span
+                        class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
+                        QuizMaster
+                    </span>
+                    <span class="text-slate-400 text-sm">Developed by Ritik Gupta</span>
+                </div>
                 <div class="flex space-x-6 text-sm text-slate-500">
                     <a href="/" class="hover:text-indigo-600 transition-colors">Home</a>
                     <a href="#" class="hover:text-indigo-600 transition-colors">Privacy</a>
@@ -102,4 +120,5 @@
         </div>
     </footer>
 </body>
-</html>
+
+</html>
