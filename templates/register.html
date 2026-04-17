@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,96 +9,111 @@
     <link rel="stylesheet" href="/static/styles/main.css">
     <title>Register | Quiz Master</title>
     <style>
-        body { font-family: 'Outfit', sans-serif; }
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">
-            Join <span class="text-indigo-600">QuizMaster</span>
-        </h1>
-        <p class="mt-2 text-sm text-slate-600">
-            Create an account to start mastering your knowledge
-        </p>
-    </div>
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-lg px-4">
-        <div class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 rounded-3xl sm:px-10 border border-slate-100">
-            <form action="/register" method="POST" class="space-y-4">
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label for="full_name" class="block text-sm font-semibold text-slate-700">Full Name</label>
-                        <input id="full_name" name="full_name" type="text" required 
-                               placeholder="John Doe"
-                               class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
+<body class="bg-slate-50 min-h-screen flex flex-col">
+    <div class="flex-grow flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">
+                Join <span class="text-indigo-600">QuizMaster</span>
+            </h1>
+            <p class="mt-2 text-sm text-slate-600">
+                Create an account to start mastering your knowledge
+            </p>
+        </div>
+
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-lg px-4">
+            <div class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 rounded-3xl sm:px-10 border border-slate-100">
+                <form action="/register" method="POST" class="space-y-4">
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="full_name" class="block text-sm font-semibold text-slate-700">Full Name</label>
+                            <input id="full_name" name="full_name" type="text" required placeholder="John Doe"
+                                class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
+                        </div>
+                        <div>
+                            <label for="user_name" class="block text-sm font-semibold text-slate-700">Email
+                                Address</label>
+                            <input id="user_name" name="user_name" type="email" autocomplete="email" required
+                                placeholder="john@example.com"
+                                class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
+                        </div>
                     </div>
+
                     <div>
-                        <label for="user_name" class="block text-sm font-semibold text-slate-700">Email Address</label>
-                        <input id="user_name" name="user_name" type="email" autocomplete="email" required 
-                               placeholder="john@example.com"
-                               class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
+                        <label for="qualification" class="block text-sm font-semibold text-slate-700">Qualification
+                            <span class="text-slate-400 font-normal ml-1 text-xs">(optional)</span></label>
+                        <input id="qualification" name="qualification" type="text"
+                            placeholder="Bachelor's, High School, etc."
+                            class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
                     </div>
-                </div>
 
-                <div>
-                    <label for="qualification" class="block text-sm font-semibold text-slate-700">Qualification <span class="text-slate-400 font-normal ml-1 text-xs">(optional)</span></label>
-                    <input id="qualification" name="qualification" type="text" 
-                           placeholder="Bachelor's, High School, etc."
-                           class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
-                </div>
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
+                        <input id="password" name="password" type="password" required placeholder="••••••••"
+                            class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
+                    </div>
 
-                <div>
-                    <label for="password" class="block text-sm font-semibold text-slate-700">Password</label>
-                    <input id="password" name="password" type="password" required 
-                           placeholder="••••••••"
-                           class="mt-1 block w-full px-4 py-2.5 border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all">
-                </div>
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
+                            Create Account
+                        </button>
+                    </div>
+                </form>
 
-                <div class="pt-2">
-                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
-                        Create Account
-                    </button>
-                </div>
-            </form>
-
-            <div class="mt-6 text-center">
-                <p class="text-sm text-slate-600">
-                    Already have an account? <a href="/login" class="font-bold text-indigo-600 hover:text-indigo-500 transition-all">Log in</a>
-                </p>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                  {% if messages %}
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-slate-600">
+                        Already have an account? <a href="/login"
+                            class="font-bold text-indigo-600 hover:text-indigo-500 transition-all">Log in</a>
+                    </p>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
                     <div class="mt-4 space-y-2">
-                    {% for category, message in messages %}
-                      {% if category == 'danger' or category == 'error' %}
+                        {% for category, message in messages %}
+                        {% if category == 'danger' or category == 'error' %}
                         <div class="p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">
                             {{ message }}
                         </div>
-                      {% elif category == 'success' %}
-                        <div class="p-3 rounded-lg bg-emerald-50 text-emerald-600 text-sm font-medium border border-emerald-100">
+                        {% elif category == 'success' %}
+                        <div
+                            class="p-3 rounded-lg bg-emerald-50 text-emerald-600 text-sm font-medium border border-emerald-100">
                             {{ message }}
                         </div>
-                      {% else %}
-                        <div class="p-3 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-medium border border-indigo-100">
+                        {% else %}
+                        <div
+                            class="p-3 rounded-lg bg-indigo-50 text-indigo-600 text-sm font-medium border border-indigo-100">
                             {{ message }}
                         </div>
-                      {% endif %}
-                    {% endfor %}
+                        {% endif %}
+                        {% endfor %}
                     </div>
-                  {% endif %}
-                {% endwith %}
+                    {% endif %}
+                    {% endwith %}
 
-                {% if msg %}
-                <div class="mt-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">
-                    {{msg}}
+                    {% if msg %}
+                    <div class="mt-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">
+                        {{msg}}
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>
     <footer class="mt-auto py-8 border-t border-slate-200 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-slate-500">Quiz Master Developed by Ritik Gupta</p>
+                <div class="flex items-center space-x-2">
+                    <span
+                        class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
+                        QuizMaster
+                    </span>
+                    <span class="text-slate-400 text-sm">Developed by Ritik Gupta</span>
+                </div>
                 <div class="flex space-x-6 text-sm text-slate-500">
                     <a href="/" class="hover:text-indigo-600 transition-colors">Home</a>
                     <a href="#" class="hover:text-indigo-600 transition-colors">Privacy</a>
@@ -107,4 +123,5 @@
         </div>
     </footer>
 </body>
-</html>
+
+</html>
