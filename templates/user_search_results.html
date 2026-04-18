@@ -1,0 +1,95 @@
+{% extends "user_layout.html" %}
+{% block content %}
+
+<div class="mb-8">
+    <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Quiz Results</h2>
+    <p class="text-slate-500 mt-2 text-lg">
+        Found matches for <span class="font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">"{{ search_query }}"</span>
+    </p>
+</div>
+
+{% if matched_users %}
+<div class="mb-10">
+    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+        <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        Matching Users
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for data in matched_users %}
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
+            <div class="h-14 w-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-inner">
+                {{ data.user.full_name[0] | upper }}
+            </div>
+            <div>
+                <h4 class="font-extrabold text-slate-900 text-lg leading-tight">{{ data.user.full_name }}</h4>
+                <div class="flex items-center gap-2 font-bold mt-1.5">
+                    <span class="text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg text-[10px] uppercase tracking-wider">Rank #{{ data.rank }}</span>
+                    <span class="text-slate-500 text-xs">{{ data.xp }} XP Total</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if quizzes %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    {% for quiz in quizzes %}
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl hover:shadow-indigo-100/50 transition-all group flex flex-col">
+        <div class="px-6 py-5 bg-gradient-to-br from-slate-50 to-white flex-grow">
+            <div class="flex justify-between items-start mb-4">
+                <div class="h-10 w-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+                {% if quiz.difficulty == 'Easy' %}
+                <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-emerald-100 text-emerald-700">Easy</span>
+                {% elif quiz.difficulty == 'Medium' %}
+                <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-amber-100 text-amber-700">Medium</span>
+                {% else %}
+                <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-red-100 text-red-700">High</span>
+                {% endif %}
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-900 mb-1 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                {{ quiz.formatted_topic }}
+            </h3>
+
+            <div class="flex items-center text-xs text-slate-500 font-medium mt-3 gap-3">
+                <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    {{ quiz.questions|length }} Qs
+                </span>
+                <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    {{ quiz.time_duration }}
+                </span>
+            </div>
+            
+            <div class="mt-3 text-xs text-slate-400 font-medium">
+                By: {{ quiz.creator.full_name if quiz.creator else 'Admin' }}
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-50 bg-white">
+            <a href="{{ url_for('start_quiz', qid=quiz.id) }}" class="flex items-center justify-center w-full px-4 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-indigo-600 transition-colors group/btn">
+                <span>Start Quiz</span>
+                <svg class="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% elif not matched_users %}
+<div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-12 text-center max-w-2xl mx-auto mt-8">
+    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="h-10 w-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+    </div>
+    <h3 class="text-xl font-bold text-slate-800 mb-2">No Matching Records Found</h3>
+    <p class="text-slate-500">We couldn't find any quizzes or users matching "{{ search_query }}". Try adjusting your search keywords.</p>
+    <a href="{{ url_for('explore_quizzes') }}" class="mt-6 inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all text-sm shadow-lg shadow-indigo-200">
+        Explore All Quizzes
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}
