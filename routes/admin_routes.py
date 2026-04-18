@@ -166,3 +166,40 @@ def init_admin_routes(app):
         extra_defaults = [s for s in DEFAULT_SUBJECTS if s.lower() not in db_subject_names_lower]
         has_api_key = os.environ.get("GOOGLE_API_KEY") is not None
         return render_template("generate_ai_quiz.html", subjects=db_subjects, default_subjects=extra_defaults, has_api_key=has_api_key)
+
+    @app.route("/search", methods=["GET", "POST"])
+    @role_required("admin")
+    def search():
+        if request.method == "POST":
+            search_txt = request.form.get("search_txt")
+            if not search_txt:  
+                return redirect(url_for("admin_dashboard"))
+            
+            search_pattern = f"%{search_txt}%"
+            
+            # Admin Search User by name or qualification
+            by_user = User.query.filter(
+                db.or_(
+                    User.full_name.ilike(search_pattern),
+                    User.qualification.ilike(search_pattern)
+                )
+            ).all()
+
+            # Admin Search Subjects by name
+            by_subject = Subject.query.filter(Subject.name.ilike(search_pattern)).all()
+            
+            # Admin Search Quizzes by topic or subject name
+            by_quiz = Quiz.query.join(Subject).filter(
+                db.or_(
+                    Quiz.topic.ilike(search_pattern),
+                    Subject.name.ilike(search_pattern)
+                )
+            ).all()
+            
+            return render_template("admin_search_results.html", 
+                                   users=by_user, 
+                                   subjects=by_subject, 
+                                   quizzes=by_quiz, 
+                                   search_query=search_txt)
+            
+        return redirect(url_for("admin_dashboard"))
