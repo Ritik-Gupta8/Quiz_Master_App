@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <title>User Home | Quiz Master</title>
     <style>
-        body { font-family: 'Outfit', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
         .loading-overlay {
             position: fixed;
             inset: 0;
@@ -22,49 +30,102 @@
         }
     </style>
 </head>
+
 <body class="bg-indigo-50 min-h-screen flex flex-col">
     <nav class="sticky top-0 z-50 glass border-b border-indigo-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center space-x-8">
                     <div class="flex-shrink-0 flex items-center">
-                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
+                        <span
+                            class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
                             QuizMaster
                         </span>
                     </div>
                     <div class="hidden sm:flex sm:space-x-4">
-                        <a href="{{ url_for('user_dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Home</a>
-                        <a href="{{ url_for('my_quizzes') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">My Quizzes</a>
-                        <a href="{{ url_for('explore_quizzes') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Explore Quizzes</a>
-                        <a href="{{ url_for('leaderboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm transition-all border border-transparent hover:border-indigo-100">🏆 Leaderboard</a>
-                        <a href="{{ url_for('completed_quizzes') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Completed Quizzes</a>
-                        <a href="{{ url_for('view_score') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">My Scores</a>
-                        <a href="{{ url_for('user_summary') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Progress</a>
+                        <a href="{{ url_for('user_dashboard') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Home</a>
+                        <a href="{{ url_for('my_quizzes') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">My
+                            Quizzes</a>
+                        <a href="{{ url_for('explore_quizzes') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Explore
+                            Quizzes</a>
+                        <a href="{{ url_for('leaderboard') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 shadow-sm transition-all border border-transparent hover:border-indigo-100">
+                            Leaderboard</a>
+                        <a href="{{ url_for('completed_quizzes') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Completed
+                            Quizzes</a>
+                        <a href="{{ url_for('view_score') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">My
+                            Scores</a>
+                        <a href="{{ url_for('user_summary') }}"
+                            class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Progress</a>
                     </div>
                 </div>
                 <div class="flex items-center sm:hidden">
-                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="p-2 rounded-md text-slate-400 hover:text-indigo-600 hover:bg-slate-100 focus:outline-none transition-all">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')"
+                        class="p-2 rounded-md text-slate-400 hover:text-indigo-600 hover:bg-slate-100 focus:outline-none transition-all">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
                     </button>
                 </div>
                 <div class="hidden sm:flex items-center text-sm font-medium text-slate-600 space-x-4">
-                    <span class="hidden lg:inline">Hello, <span class="text-indigo-600 font-semibold">{{ current_user.full_name }}</span></span>
-                    <a href="/logout" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <form action="{{ url_for('search_user') }}" method="POST" class="relative flex items-center mr-2">
+                        <input type="text" name="search_txt" placeholder="Search quizzes, subjects..."
+                            class="w-48 lg:w-64 pl-10 pr-4 py-2 rounded-full border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 transition-all shadow-inner">
+                        <div
+                            class="absolute inset-y-0 left-0 pl-3 flex items-center object-scale-down pointer-events-none">
+                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </form>
+                    <span class="hidden lg:inline">Hello, <span class="text-indigo-600 font-semibold">{{
+                            current_user.full_name }}</span></span>
+                    <a href="/logout"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Logout
                     </a>
                 </div>
             </div>
         </div>
         <div id="mobile-menu" class="hidden sm:hidden border-t border-indigo-50 bg-white/95 backdrop-blur-md">
-            <div class="pt-2 pb-3 space-y-1 px-4">
-                <a href="{{ url_for('user_dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Home</a>
-                <a href="{{ url_for('my_quizzes') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">My Quizzes</a>
-                <a href="{{ url_for('explore_quizzes') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Explore Quizzes</a>
-                <a href="{{ url_for('leaderboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-all">🏆 Leaderboard</a>
-                <a href="{{ url_for('completed_quizzes') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Completed Quizzes</a>
-                <a href="{{ url_for('view_score') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">My Scores</a>
-                <a href="{{ url_for('user_summary') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Progress</a>
-                <a href="{{ url_for('logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</a>
+            <div class="pt-4 pb-3 space-y-1 px-4">
+                <form action="{{ url_for('search_user') }}" method="POST" class="relative mb-4">
+                    <input type="text" name="search_txt" placeholder="Search quizzes..."
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 shadow-inner">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                </form>
+                <a href="{{ url_for('user_dashboard') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Home</a>
+                <a href="{{ url_for('my_quizzes') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">My
+                    Quizzes</a>
+                <a href="{{ url_for('explore_quizzes') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Explore
+                    Quizzes</a>
+                <a href="{{ url_for('leaderboard') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-all">Leaderboard</a>
+                <a href="{{ url_for('completed_quizzes') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Completed
+                    Quizzes</a>
+                <a href="{{ url_for('view_score') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">My
+                    Scores</a>
+                <a href="{{ url_for('user_summary') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Progress</a>
+                <a href="{{ url_for('logout') }}"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</a>
             </div>
         </div>
     </nav>
@@ -72,23 +133,32 @@
     <!-- Flash Messages -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="p-4 rounded-2xl mb-4 flex items-center justify-between {% if category == 'error' %}bg-red-50 text-red-700 border border-red-100{% else %}bg-emerald-50 text-emerald-700 border border-emerald-100{% endif %}">
-                        <div class="flex items-center">
-                            {% if category == 'error' %}
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            {% else %}
-                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            {% endif %}
-                            <p class="text-sm font-bold">{{ message }}</p>
-                        </div>
-                        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div
+            class="p-4 rounded-2xl mb-4 flex items-center justify-between {% if category == 'error' %}bg-red-50 text-red-700 border border-red-100{% else %}bg-emerald-50 text-emerald-700 border border-emerald-100{% endif %}">
+            <div class="flex items-center">
+                {% if category == 'error' %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {% else %}
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {% endif %}
+                <p class="text-sm font-bold">{{ message }}</p>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
     </div>
 
@@ -100,7 +170,8 @@
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center space-x-2">
-                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
+                    <span
+                        class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
                         QuizMaster
                     </span>
                     <span class="text-slate-400 text-sm">Developed by Ritik Gupta</span>
@@ -118,11 +189,17 @@
         <div class="relative">
             <div class="h-24 w-24 rounded-full border-t-4 border-b-4 border-indigo-600 animate-spin"></div>
             <div class="absolute inset-0 flex items-center justify-center">
-                <svg class="h-10 w-10 text-indigo-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <svg class="h-10 w-10 text-indigo-600 animate-pulse" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
             </div>
         </div>
         <h2 class="mt-8 text-2xl font-bold text-slate-900 text-center">Generating Your Quiz...</h2>
-        <p class="mt-2 text-slate-500 font-medium italic text-center">This can take up to 5-10 seconds, please stay on this page.</p>
+        <p class="mt-2 text-slate-500 font-medium italic text-center">This can take up to 5-10 seconds, please stay on
+            this page.</p>
     </div>
 </body>
-</html>
+
+</html>
