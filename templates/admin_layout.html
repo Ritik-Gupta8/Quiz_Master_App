@@ -45,6 +45,13 @@
                     </button>
                 </div>
                 <div class="hidden sm:flex items-center text-sm font-medium text-slate-600 space-x-4">
+                    <form action="{{ url_for('search') }}" method="POST" class="relative flex items-center mr-2">
+                        <input type="text" name="search_txt" placeholder="Search users, quizzes..." 
+                            class="w-48 lg:w-64 pl-10 pr-4 py-2 rounded-full border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 transition-all shadow-inner">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center object-scale-down pointer-events-none">
+                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                    </form>
                     <span class="hidden lg:inline">Welcome, <span class="text-indigo-600 font-semibold">{{ current_user.full_name }}</span></span>
                     <a href="/logout" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all">
                         Logout
@@ -54,7 +61,14 @@
         </div>
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden sm:hidden border-t border-slate-200 bg-white/95 backdrop-blur-md">
-            <div class="pt-2 pb-3 space-y-1 px-4">
+            <div class="pt-4 pb-3 space-y-1 px-4">
+                <form action="{{ url_for('search') }}" method="POST" class="relative mb-4">
+                    <input type="text" name="search_txt" placeholder="Search users, quizzes..." 
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 shadow-inner">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                </form>
                 <a href="{{ url_for('admin_dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Dashboard</a>
                 <a href="{{ url_for('quiz_management') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Quizzes</a>
                 <a href="{{ url_for('admin_summary') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Summary</a>
