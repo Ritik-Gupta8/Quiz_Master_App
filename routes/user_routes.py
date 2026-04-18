@@ -155,26 +155,6 @@ def init_user_routes(app):
                 
         return render_template("leaderboard.html", user=current_user, subject_boards=subject_boards)
 
-    @app.route("/search", methods=["GET", "POST"])
-    @role_required("admin")
-    def search():
-        if request.method == "POST":
-            search_txt = request.form.get("search_txt")
-            if not search_txt:  
-                return redirect(url_for("admin_dashboard"))
-            
-            by_user = User.query.filter(User.full_name.ilike(f"%{search_txt}%")).all()
-            by_subject = Subject.query.filter(Subject.name.ilike(f"%{search_txt}%")).all()
-            by_quiz = Quiz.query.join(Subject).filter(Subject.name.ilike(f"%{search_txt}%")).all()
-            
-            if by_user:
-                return render_template("user_details.html", users=by_user)
-            elif by_subject:
-                return render_template("admin_dashboard.html", subjects=by_subject)
-            elif by_quiz:
-                return render_template("quiz_management.html", quizzes=by_quiz)
-        return redirect(url_for("admin_dashboard"))
-
     @app.route("/user_search", methods=["GET", "POST"])
     @role_required("user")
     def search_user():
@@ -182,12 +162,63 @@ def init_user_routes(app):
             search_txt = request.form.get("search_txt")
             if not search_txt:  
                 return redirect(url_for("user_dashboard"))
+            
+            # Expanded User Search: matches quiz topic, subject name, difficulty, grade, or creator's name
+            search_pattern = f"%{search_txt}%"
+            
+            # Simple scoring match
             try:
-                score_value = int(search_txt)  
+                score_value = int(search_txt)
+                scores = Score.query.filter_by(user_id=current_user.id, total_score=score_value).all()
+                if scores:
+                    return render_template("view_score.html", user=current_user, scores=scores, quizzes=Quiz.query.all())
             except ValueError:
-                return redirect(url_for("user_dashboard"))
+                pass
+
+            # Keyword matches inside Quizzes table directly
+            matched_quizzes = Quiz.query.join(Subject).filter(
+                db.or_(
+                    Quiz.topic.ilike(search_pattern),
+                    Subject.name.ilike(search_pattern),
+                    Quiz.difficulty.ilike(search_pattern)
+                )
+            ).order_by(Quiz.id.desc()).all()
+            
+            # Find Users by Name & compute their global rank/xp
+            matched_users_db = User.query.filter(User.role == 1, User.full_name.ilike(search_pattern)).all()
+            matched_user_data = []
+            
+            if matched_users_db:
+                all_users = User.query.filter_by(role=1).all()
+                global_rankings = []
+                # Compute global XP for everyone to establish ranks
+                for u in all_users:
+                    user_scores = db.session.query(Score).filter_by(user_id=u.id).all()
+                    xp = 0
+                    for s in user_scores:
+                        multiplier = 1.0
+                        if s.quiz.difficulty == 'Medium':
+                            multiplier = 1.2
+                        elif s.quiz.difficulty == 'High':
+                            multiplier = 1.5
+                        xp += int((s.total_score / s.quiz.no_of_questions) * 100 * multiplier) if s.quiz.no_of_questions else 0
+                        
+                    global_rankings.append({
+                        "user": u,
+                        "xp": xp
+                    })
                 
-            scores = Score.query.filter_by(user_id=current_user.id, total_score=score_value).all()
-            if scores:
-                return render_template("view_score.html", user=current_user, scores=scores, quizzes=Quiz.query.all())
+                global_rankings.sort(key=lambda x: x["xp"], reverse=True)
+                
+                matched_user_ids = [u.id for u in matched_users_db]
+                for idx, entry in enumerate(global_rankings):
+                    if entry["user"].id in matched_user_ids:
+                        matched_user_data.append({
+                            "user": entry["user"],
+                            "xp": entry["xp"],
+                            "rank": idx + 1
+                        })
+            
+            return render_template("user_search_results.html", user=current_user, quizzes=matched_quizzes, matched_users=matched_user_data, search_query=search_txt, dt_time_now=date.today())
+            
         return redirect(url_for("user_dashboard"))
