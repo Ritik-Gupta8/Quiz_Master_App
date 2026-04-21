@@ -1,7 +1,7 @@
 from flask import render_template, request, url_for, redirect, flash
 from flask_login import current_user
 from datetime import datetime, date
-from models.models import db, Subject, Quiz, User, Question, QuizAttempt, Score
+from models.models import db, Subject, Quiz, User, Question, QuizAttempt, Score, UserQuota
 from routes.utils import role_required
 from services.ai_service import generate_quiz_questions
 
@@ -22,6 +22,32 @@ def init_user_routes(app):
     @app.route("/user_generate_ai_quiz", methods=["POST"])
     @role_required("user")
     def user_generate_ai_quiz():
+        # --- Scalable Quota & Rate Limiting Logic ---
+        quota = UserQuota.query.filter_by(user_id=current_user.id).first()
+        if not quota:
+            quota = UserQuota(user_id=current_user.id, daily_count=0, last_reset_date=date.today())
+            db.session.add(quota)
+            db.session.flush()
+
+        # 1. Midnight Reset Check
+        if quota.last_reset_date and quota.last_reset_date < date.today():
+            quota.daily_count = 0
+            quota.last_reset_date = date.today()
+
+        # 2. Hard Daily Limit Check (Max 2 per day)
+        if quota.daily_count >= 2:
+            flash("You have exhausted your daily limit of 2 quizzes. Please try again tomorrow, or explore quizzes created by others!", "error")
+            return redirect(url_for("user_dashboard"))
+
+        # 3. 10-Minute Gen Cooldown Interval Check (600 seconds)
+        if quota.last_request_time:
+            time_since_last = (datetime.now() - quota.last_request_time).total_seconds()
+            if time_since_last < 600:
+                minutes_left = int((600 - time_since_last) // 60)
+                flash(f"You can generate another quiz in {minutes_left + 1} minutes.", "error")
+                return redirect(url_for("user_dashboard"))
+        # --------------------------------------------
+
         DIFFICULTY_CONFIG = {
             "Easy":   (5,  "00:05"),
             "Medium": (10, "00:10"),
@@ -72,8 +98,13 @@ def init_user_routes(app):
             )
             db.session.add(new_question)
 
+        # Mutate Quota safely alongside everything
+        quota.daily_count += 1
+        quota.last_request_time = datetime.now()
+
         db.session.commit()
-        return redirect(url_for("start_quiz", qid=new_quiz.id))
+        flash("Quiz generated successfully! Navigate to 'My Quizzes' to attempt it.", "success")
+        return redirect(url_for("user_dashboard"))
 
     @app.route("/my_quizzes")
     @role_required("user")
@@ -85,9 +116,19 @@ def init_user_routes(app):
     @app.route("/explore_quizzes")
     @role_required("user")
     def explore_quizzes():
-        quizzes = Quiz.query.order_by(Quiz.id.desc()).all()
+        # Filter out quizzes created by the current user
+        base_quizzes = Quiz.query.filter(Quiz.creator_id != current_user.id).order_by(Quiz.id.desc()).all()
+        
+        # Filter out quizzes where the user has exhausted their attempts
+        available_quizzes = []
+        for quiz in base_quizzes:
+            attempts_count = QuizAttempt.query.filter_by(quiz_id=quiz.id, user_id=current_user.id).filter(
+                QuizAttempt.status.in_(["submitted", "expired"])).count()
+            if attempts_count < MAX_QUIZ_ATTEMPTS:
+                available_quizzes.append(quiz)
+                
         dt_time_now = date.today()
-        return render_template("explore_quizzes.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now)
+        return render_template("explore_quizzes.html", user=current_user, quizzes=available_quizzes, dt_time_now=dt_time_now)
 
     @app.route("/completed_quizzes")
     @role_required("user")
