@@ -69,7 +69,17 @@ class Score(db.Model):
     total_score = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f"<Score {self.id}: user={self.user_id}, quiz={self.quiz_id}, score={self.total_score}>"
+        return f"<Score {self.id}: quiz={self.quiz_id}, user={self.user_id}, score={self.total_score}>"
+
+class UserQuota(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), unique=True, nullable=False)
+    last_request_time = db.Column(db.DateTime, nullable=True)
+    daily_count = db.Column(db.Integer, default=0)
+    last_reset_date = db.Column(db.Date, nullable=True)
+
+    def __repr__(self):
+        return f"<UserQuota {self.id}: user={self.user_id}, daily_count={self.daily_count}>"
 
 class QuizAttempt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
