@@ -13,6 +13,26 @@ class User(db.Model, UserMixin):
     scores = db.relationship("Score", cascade="all,delete", backref="user", lazy=True)
     quizzes_created = db.relationship("Quiz", backref="creator", lazy=True)
 
+    def calculate_xp(self, subject_id=None):
+        best_scores = {}
+        for s in self.scores:
+            if subject_id and s.quiz.subject_id != subject_id:
+                continue
+            qid = s.quiz_id
+            if qid not in best_scores or s.total_score > best_scores[qid].total_score:
+                best_scores[qid] = s
+                
+        xp = 0
+        for qid, s in best_scores.items():
+            multiplier = 1.0
+            if s.quiz.difficulty == 'Medium':
+                multiplier = 1.2
+            elif s.quiz.difficulty == 'High':
+                multiplier = 1.5
+            if s.quiz.no_of_questions > 0:
+                xp += int((s.total_score / s.quiz.no_of_questions) * 100 * multiplier)
+        return xp
+
     def __repr__(self):
         return f"<User {self.id}: {self.full_name}>"
 
