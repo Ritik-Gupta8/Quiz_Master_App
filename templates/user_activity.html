@@ -1,0 +1,69 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">User Activity Dashboard</h2>
+            <p class="text-slate-500 mt-1">Track experience points and quiz attempts across subjects.</p>
+        </div>
+        <div class="flex items-center gap-2 text-sm font-medium text-slate-500 bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-sm">
+             <svg class="w-5 h-5 text-indigo-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+             Activity Tracker
+        </div>
+    </div>
+
+    {% if activity %}
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-100">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px] w-16">Rank</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">User Name</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Total XP</th>
+                        <th class="px-6 py-4 text-center font-bold text-slate-500 uppercase tracking-wider text-[10px]">Total Attempts</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Subject Breakdown</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for item in activity %}
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-black text-slate-400">
+                            #{{ item.rank }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-100 to-purple-100 text-indigo-700 flex items-center justify-center font-bold text-xs uppercase shadow-inner mr-3">
+                                    {{ item.user.full_name[:2] }}
+                                </div>
+                                <span class="text-sm font-bold text-slate-900">{{ item.user.full_name }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-black text-indigo-600">
+                            {{ item.total_xp }} <span class="text-[10px] text-slate-400 font-bold uppercase ml-1">XP</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600">
+                                {{ item.total_attempts }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-slate-600 font-medium">
+                            {{ item.breakdown }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-3xl p-16 text-center border-2 border-dashed border-slate-200">
+        <div class="mx-auto h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+             <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">No Activity Yet</h3>
+        <p class="text-slate-500 mt-2 max-w-sm mx-auto">None of the registered students have completed any quizzes yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
