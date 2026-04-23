@@ -110,8 +110,15 @@ def init_user_routes(app):
     @role_required("user")
     def my_quizzes():
         quizzes = Quiz.query.filter_by(creator_id=current_user.id).order_by(Quiz.id.desc()).all()
+        maxed_quizzes_ids = []
+        for quiz in quizzes:
+            attempts_count = QuizAttempt.query.filter_by(quiz_id=quiz.id, user_id=current_user.id).filter(
+                QuizAttempt.status.in_(["submitted", "expired"])).count()
+            if attempts_count >= MAX_QUIZ_ATTEMPTS:
+                maxed_quizzes_ids.append(quiz.id)
+
         dt_time_now = date.today()
-        return render_template("my_quizzes.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now)
+        return render_template("my_quizzes.html", user=current_user, quizzes=quizzes, dt_time_now=dt_time_now, maxed_quizzes_ids=maxed_quizzes_ids)
 
     @app.route("/explore_quizzes")
     @role_required("user")
