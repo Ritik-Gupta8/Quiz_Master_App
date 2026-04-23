@@ -21,6 +21,41 @@ def init_admin_routes(app):
         users = User.query.filter(User.role != 0).all()  
         return render_template('user_details.html', users=users)
 
+    @app.route('/user_activity')
+    @role_required("admin")
+    def user_activity():
+        users = User.query.filter(User.role != 0).all()
+        activity_data = []
+
+        for u in users:
+            scores = u.scores
+            total_xp = u.calculate_xp()
+            
+            subject_counts = {}
+            for s in scores:
+                subj_name = s.quiz.subject.name
+                subject_counts[subj_name] = subject_counts.get(subj_name, 0) + 1
+                
+            breakdown = ", ".join([f"{subj} ({count})" for subj, count in subject_counts.items()])
+            if not breakdown:
+                breakdown = "No activity yet"
+
+            activity_data.append({
+                "user": u,
+                "total_xp": total_xp,
+                "total_attempts": len(scores),
+                "breakdown": breakdown
+            })
+
+        # Sort by XP descending (highest XP top)
+        activity_data.sort(key=lambda x: x["total_xp"], reverse=True)
+        
+        # Assign rank based on sorted list
+        for idx, item in enumerate(activity_data):
+            item["rank"] = idx + 1
+
+        return render_template('user_activity.html', activity=activity_data)
+
     @app.route("/subject", methods=["POST", "GET"])
     @role_required("admin")
     def add_subject():
@@ -68,24 +103,7 @@ def init_admin_routes(app):
         quizzes = Quiz.query.all()
         return render_template("quiz_management.html", quizzes=quizzes)
 
-    @app.route("/edit_quiz/<id>", methods=["GET", "POST"])
-    @role_required("admin")
-    def edit_quiz(id):
-        q = Quiz.query.filter_by(id=id).first()
-    
-        if request.method == "POST":
-            q.subject_id = request.form.get("subject_id")
-            q.topic = request.form.get("topic", "General Topic")
-            date_of_quiz = request.form.get("date_of_quiz")
-            q.date_of_quiz = datetime.strptime(date_of_quiz, "%Y-%m-%d").date()
-            q.time_duration = request.form.get("time_duration")
-            q.no_of_questions = request.form.get("no_of_questions")
-            q.difficulty = request.form.get("difficulty", "Medium")
-            db.session.commit()
-            return redirect(url_for("quiz_management"))
-        
-        subjects = Subject.query.all()
-        return render_template("edit_quiz.html", quiz=q, subjects=subjects)
+
 
     @app.route("/delete_quiz/<id>", methods=["GET", "POST"])
     @role_required("admin")
