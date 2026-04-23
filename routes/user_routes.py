@@ -162,20 +162,8 @@ def init_user_routes(app):
         for subject in subjects:
             rankings = []
             for u in all_users:
-                user_scores = db.session.query(Score).join(Quiz).filter(
-                    Score.user_id == u.id,
-                    Quiz.subject_id == subject.id
-                ).all()
-                
-                xp = 0
-                for s in user_scores:
-                    multiplier = 1.0
-                    if s.quiz.difficulty == 'Medium':
-                        multiplier = 1.2
-                    elif s.quiz.difficulty == 'High':
-                        multiplier = 1.5
-                    xp += int((s.total_score / s.quiz.no_of_questions) * 100 * multiplier) if s.quiz.no_of_questions else 0
-                    
+                user_scores = [s for s in u.scores if s.quiz.subject_id == subject.id]
+                xp = u.calculate_xp(subject.id)
                 if xp > 0:
                     rankings.append({
                         "user": u,
@@ -241,15 +229,7 @@ def init_user_routes(app):
                 global_rankings = []
                 # Compute global XP for everyone to establish ranks
                 for u in all_users:
-                    user_scores = db.session.query(Score).filter_by(user_id=u.id).all()
-                    xp = 0
-                    for s in user_scores:
-                        multiplier = 1.0
-                        if s.quiz.difficulty == 'Medium':
-                            multiplier = 1.2
-                        elif s.quiz.difficulty == 'High':
-                            multiplier = 1.5
-                        xp += int((s.total_score / s.quiz.no_of_questions) * 100 * multiplier) if s.quiz.no_of_questions else 0
+                    xp = u.calculate_xp()
                         
                     global_rankings.append({
                         "user": u,
