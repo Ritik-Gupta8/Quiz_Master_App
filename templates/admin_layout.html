@@ -31,12 +31,12 @@
                         <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
                             QuizMaster
                         </span>
-                    </div>
                     <div class="hidden sm:flex sm:space-x-4">
                         <a href="{{ url_for('admin_dashboard') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Dashboard</a>
                         <a href="{{ url_for('quiz_management') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Quizzes</a>
                         <a href="{{ url_for('admin_summary') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Summary</a>
                         <a href="{{ url_for('user_deatils') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Users</a>
+                        <a href="{{ url_for('user_activity') }}" class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 transition-all">Activity</a>
                     </div>
                 </div>
                 <div class="flex items-center sm:hidden">
@@ -73,6 +73,7 @@
                 <a href="{{ url_for('quiz_management') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Quizzes</a>
                 <a href="{{ url_for('admin_summary') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Summary</a>
                 <a href="{{ url_for('user_deatils') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Users</a>
+                <a href="{{ url_for('user_activity') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50">Activity</a>
                 <a href="{{ url_for('logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</a>
             </div>
         </div>
