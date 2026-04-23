@@ -35,7 +35,3 @@ Thumbs.db
 # Flask
 *.log
 
-
-# Generated images (runtime artifacts)
-static/images/admin_summary.jpeg
-static/images/user_summary.jpeg
