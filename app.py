@@ -3,6 +3,7 @@ from models.models import db, User
 from flask_login import LoginManager
 from flask_session import Session
 from werkzeug.security import generate_password_hash
+from flask_migrate import Migrate
 import os
 from dotenv import load_dotenv
 
@@ -17,6 +18,9 @@ def setup_app():
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "quiz-master-dev-secret-key-change-in-prod")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
+    
+    # Initialize Flask-Migrate
+    migrate = Migrate(app, db)
     
     # Configure Flask-Login
     login_manager = LoginManager()
@@ -34,9 +38,11 @@ def setup_app():
     
     app.app_context().push()
     
-    # Create tables if they don't exist and create an admin user
-    db.create_all()
-    create_admin()
+    # Create an admin user if tables exist
+    try:
+        create_admin()
+    except Exception as e:
+        print("⚠️ Skipping admin creation (Database tables might not be migrated yet).")
 
 def create_admin():
     admin_email = os.environ.get("ADMIN_EMAIL")
