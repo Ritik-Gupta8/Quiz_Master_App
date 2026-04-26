@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles/main.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="/static/images/logo-192.png">
+    <title>{% block title %}{% endblock %} | Quiz Master</title>
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center">
+    <!-- Navbar -->
+    <nav class="w-full bg-white shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="/" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
+                    QuizMaster
+                </a>
+                <div class="flex items-center space-x-4">
+                    <a href="/login" class="text-sm font-medium text-slate-500 hover:text-indigo-600">Login</a>
+                    <a href="/register" class="text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-all">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Box -->
+    <main class="flex-grow w-full max-w-4xl px-4 py-12">
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 sm:p-12 prose prose-indigo max-w-none">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full mt-auto py-8 border-t border-slate-200 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">QuizMaster</span>
+                    <span class="text-slate-400 text-sm">Developed by Ritik Gupta</span>
+                </div>
+                <div class="flex flex-wrap justify-center space-x-6 text-sm text-slate-500">
+                    <a href="/" class="hover:text-indigo-600 transition-colors">Home</a>
+                    <a href="/about" class="hover:text-indigo-600 transition-colors">About</a>
+                    <a href="/privacy" class="hover:text-indigo-600 transition-colors">Privacy</a>
+                    <a href="/terms" class="hover:text-indigo-600 transition-colors">Terms</a>
+                    <a href="/support" class="hover:text-indigo-600 transition-colors">Support</a>
+
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
+</body>
+</html>
