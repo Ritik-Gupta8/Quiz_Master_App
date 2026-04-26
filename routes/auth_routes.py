@@ -8,6 +8,23 @@ def init_auth_routes(app):
     def home():
         return render_template("index.html")
 
+    @app.route("/about")
+    def about():
+        return render_template("about.html")
+
+    @app.route("/privacy")
+    def privacy():
+        return render_template("privacy.html")
+
+    @app.route("/terms")
+    def terms():
+        return render_template("terms.html")
+
+    @app.route("/support")
+    def support():
+        return render_template("support.html")
+
+
     @app.route("/logout")
     @login_required
     def logout():
