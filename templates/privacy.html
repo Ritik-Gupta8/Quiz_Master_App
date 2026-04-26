@@ -1,0 +1,45 @@
+{% extends "base_static.html" %}
+
+{% block title %}Privacy Policy{% endblock %}
+
+{% block content %}
+<div class="prose prose-indigo max-w-none">
+    <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Privacy Policy</h1>
+    <p class="text-sm text-slate-500 mb-6">Last updated: April 2026</p>
+    <hr class="mb-8 border-slate-200" />
+
+    <h2 class="text-2xl font-bold text-slate-800 mb-4">1. Information We Collect</h2>
+    <p class="text-slate-600 leading-relaxed mb-6">
+        When you register for an account on QuizMaster, we collect your full name, email address, password (securely
+        hashed), and optional educational qualification. As you use the platform, we automatically track your quiz
+        scores, generated topics, completion times, and computed Experience Points (XP) to maintain leaderboard
+        rankings.
+    </p>
+
+    <h2 class="text-2xl font-bold text-slate-800 mb-4">2. How We Use Your Information</h2>
+    <p class="text-slate-600 leading-relaxed mb-6">
+        The data we collect is utilized strictly within the platform to:
+    </p>
+    <ul class="space-y-2 text-slate-600 list-disc list-inside marker:text-indigo-500 mb-6">
+        <li>Authenticate your identity securely.</li>
+        <li>Personalize your AI quiz generation parameters (grade and difficulty).</li>
+        <li>Display your username and XP rank on the global leaderboard.</li>
+        <li>Allow administrators to view aggregated engagement metrics.</li>
+    </ul>
+
+    <h2 class="text-2xl font-bold text-slate-800 mb-4">3. Data Security</h2>
+    <p class="text-slate-600 leading-relaxed mb-6">
+        We rely on industry-standard encryption. We do not store plain-text passwords. The application database is
+        strictly managed and shielded against unauthorized API access. By design, QuizMaster is an educational tool and
+        does not gather or solicit deeply personal, financial, or sensitive data outside of standard account
+        administration necessities.
+    </p>
+
+    <h2 class="text-2xl font-bold text-slate-800 mb-4">4. Third Parties</h2>
+    <p class="text-slate-600 leading-relaxed mb-6">
+        QuizMaster does not sell your personal data. We utilize third-party APIs (such as Google Gemini AI) exclusively
+        for generating unlinked educational content prompts based on technical parameters (e.g., "10th grade physics").
+        No personally identifiable information is packaged natively into those external queries.
+    </p>
+</div>
+{% endblock %}
