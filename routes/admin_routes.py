@@ -2,7 +2,7 @@ from flask import render_template, request, url_for, redirect, flash
 from flask_login import current_user
 from datetime import datetime, date
 import os
-from models.models import db, Subject, Quiz, User, Question
+from models.models import db, Subject, Quiz, User, Question, QuizAttempt, UserQuota
 from routes.utils import role_required
 from services.ai_service import generate_quiz_questions
 
@@ -221,3 +221,30 @@ def init_admin_routes(app):
                                    search_query=search_txt)
             
         return redirect(url_for("admin_dashboard"))
+
+    @app.route("/delete_user/<int:id>", methods=["POST", "GET"])
+    @role_required("admin")
+    def delete_user(id):
+        if current_user.id == id:
+            flash("Action prohibited: You cannot delete your own administrator account.", "error")
+            return redirect(url_for("user_deatils"))
+            
+        user = User.query.get_or_404(id)
+        
+        try:
+            # Clean up associated records that might not have cascade delete
+            UserQuota.query.filter_by(user_id=id).delete()
+            QuizAttempt.query.filter_by(user_id=id).delete()
+            
+            # Orphan quizzes created by this user
+            for quiz in user.quizzes_created:
+                quiz.creator_id = None
+                
+            db.session.delete(user)
+            db.session.commit()
+            flash(f"User '{user.full_name}' has been successfully removed from the system.", "success")
+        except Exception as e:
+            db.session.rollback()
+            flash(f"An error occurred while deleting the user: {str(e)}", "error")
+            
+        return redirect(url_for("user_deatils"))
