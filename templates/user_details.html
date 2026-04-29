@@ -6,8 +6,9 @@
             <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">User Directory</h2>
             <p class="text-slate-500 mt-1">Manage and view details of all registered participants.</p>
         </div>
-        <div class="flex items-center gap-2 text-sm font-medium text-slate-500 bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-sm">
-             <span class="font-bold text-indigo-600">{{ users|length }}</span> Users Registered
+        <div
+            class="flex items-center gap-2 text-sm font-medium text-slate-500 bg-white px-4 py-2 rounded-xl border border-slate-100 shadow-sm">
+            <span class="font-bold text-indigo-600">{{ users|length }}</span> Users Registered
         </div>
     </div>
 
@@ -17,10 +18,16 @@
             <table class="min-w-full divide-y divide-slate-100">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">User ID</th>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Full Name</th>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Email Address</th>
-                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">Qualification</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                            User ID</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                            Full Name</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                            Email Address</th>
+                        <th class="px-6 py-4 text-left font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                            Qualification</th>
+                        <th class="px-6 py-4 text-right font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+                            Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -34,9 +41,19 @@
                             {{ user.email }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 uppercase tracking-wider">
+                            <span
+                                class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 uppercase tracking-wider">
                                 {{ user.qualification }}
                             </span>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            <a href="{{ url_for('delete_user', id=user.id) }}" 
+                               onclick="return confirm('⚠️ CRITICAL ACTION: Are you sure you want to permanently delete user \'{{ user.full_name }}\'?\n\nThis will erase all their scores, activity history, and quota data. This action cannot be undone.')"
+                               class="inline-flex items-center p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition-all duration-200 group"
+                               title="Delete User">
+                                <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -47,7 +64,10 @@
     {% else %}
     <div class="bg-white rounded-3xl p-16 text-center border-2 border-dashed border-slate-200">
         <div class="mx-auto h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
-             <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
         </div>
         <h3 class="text-xl font-bold text-slate-900">No Users Yet</h3>
         <p class="text-slate-500 mt-2 max-w-sm mx-auto">There are no registered users in the database at the moment.</p>
