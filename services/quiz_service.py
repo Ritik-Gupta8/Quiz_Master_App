@@ -26,12 +26,16 @@ def save_attempt_answer(attempt, question_id, selected_option):
 def finalize_quiz_attempt(attempt, form_data, quiz_id):
     """Calculates everything, scores the attempt, and saves it."""
     # Final time check (allow 10 second buffer)
-    if datetime.now(timezone.utc) > attempt.end_time.replace(tzinfo=timezone.utc) + timedelta(seconds=10):
+    now_utc = datetime.now(timezone.utc)
+    if now_utc > attempt.end_time.replace(tzinfo=timezone.utc) + timedelta(seconds=10):
         attempt.status = "expired"
         success = False
         message = "Submission failed: Time has expired."
     else:
         attempt.status = "submitted"
+        # Update end_time to actual submission time for accurate analytics
+        # Strip tzinfo for consistency with how SQLAlchemy stores DateTime in this app
+        attempt.end_time = now_utc.replace(tzinfo=None)
         success = True
         message = "Quiz submitted successfully!"
 
