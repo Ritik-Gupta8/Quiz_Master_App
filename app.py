@@ -1,4 +1,5 @@
 from flask import Flask, send_from_directory
+from flask_compress import Compress
 from models.models import db, User
 from flask_login import LoginManager
 from flask_session import Session
@@ -17,6 +18,12 @@ def setup_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "quiz-master-dev-secret-key-change-in-prod")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # Performance: Cache static files for 1 year in browser
+    app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 31536000
+
+    # Performance: Enable Gzip/Brotli compression on all responses
+    Compress(app)
     db.init_app(app)
     
     # Initialize Flask-Migrate
@@ -31,8 +38,9 @@ def setup_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
         
-    # Configure Flask-Session
-    app.config["SESSION_TYPE"] = "filesystem"
+    # Configure Flask-Session — store sessions in database (persistent across Render restarts)
+    app.config["SESSION_TYPE"] = "sqlalchemy"
+    app.config["SESSION_SQLALCHEMY"] = db
     app.config["SESSION_PERMANENT"] = False
     Session(app)
     
@@ -88,4 +96,5 @@ def serve_manifest():
 
 # AI Generation system is now configured and ready for local use
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug_mode = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
+    app.run(debug=debug_mode)
