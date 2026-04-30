@@ -1,0 +1,15 @@
+{
+  "name": "quiz-master-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:css": "npx tailwindcss -i ./static/styles/tailwind_input.css -o ./static/styles/main.css",
+    "prod:css": "npx tailwindcss -i ./static/styles/tailwind_input.css -o ./static/styles/main.css --minify",
+    "watch:css": "npx tailwindcss -i ./static/styles/tailwind_input.css -o ./static/styles/main.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "postcss": "^8.4.31",
+    "autoprefixer": "^10.4.14"
+  }
+}
