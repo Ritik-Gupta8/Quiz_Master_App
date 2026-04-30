@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quiz-master-cache-v1';
+const CACHE_NAME = 'quiz-master-cache-v2';
 const OFFLINE_URL = '/static/offline.html';
 
 const urlsToCache = [
@@ -6,7 +6,6 @@ const urlsToCache = [
   '/static/styles/main.css',
   '/static/images/logo-192.png',
   '/static/images/logo-512.png',
-  'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap'
 ];
 
