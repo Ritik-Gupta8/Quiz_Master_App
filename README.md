@@ -81,7 +81,7 @@ python -c "from models.models import db; from app import setup_app; setup_app();
 ### 7. Run Application
 ```bash
 python app.py
-```
+``` 
 Visit `http://127.0.0.1:5000/` to start using the app.
 
 ---
