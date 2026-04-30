@@ -35,3 +35,6 @@ Thumbs.db
 # Flask
 *.log
 flask_session/
+# Node / npm artifacts
+node_modules/
+package-lock.json
