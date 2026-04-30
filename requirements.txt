@@ -21,3 +21,4 @@ flask-login
 flask-session
 psycopg2-binary
 Flask-Migrate
+flask-compress
