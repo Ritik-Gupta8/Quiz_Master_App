@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request
 from flask_compress import Compress
 from models.models import db, User
 from flask_login import LoginManager
