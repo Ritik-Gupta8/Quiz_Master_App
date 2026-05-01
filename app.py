@@ -44,6 +44,15 @@ def setup_app():
     app.config["SESSION_PERMANENT"] = False
     Session(app)
     
+    @app.after_request
+    def add_cache_headers(response):
+        # Prevent caching for all dynamic responses to avoid cross-user session leaks
+        if 'Cache-Control' not in response.headers:
+            response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+            response.headers['Pragma'] = 'no-cache'
+            response.headers['Expires'] = '0'
+        return response
+    
     app.app_context().push()
     
     # Create an admin user if tables exist

@@ -50,6 +50,8 @@ def init_auth_routes(app):
                 return render_template("login.html")
                 
             if check_password_hash(usr.password, pwd):
+                # Clear session to prevent cross-user session leakage or fixation
+                session.clear()
                 login_user(usr)
                 if usr.role == 0:
                     return redirect(url_for("admin_dashboard"))
