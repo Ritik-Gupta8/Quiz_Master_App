@@ -1,4 +1,5 @@
 from flask import render_template, request, url_for, redirect, session, flash
+import time
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.models import db, User
@@ -37,8 +38,8 @@ def init_auth_routes(app):
     def signin():
         if current_user.is_authenticated:
             if current_user.role == 0:
-                return redirect(url_for("admin_dashboard"))
-            return redirect(url_for("user_dashboard"))
+                return redirect(url_for("admin_dashboard", cb=int(time.time())))
+            return redirect(url_for("user_dashboard", cb=int(time.time())))
 
         if request.method == "POST":
             uname = request.form.get("user_name")
@@ -54,9 +55,9 @@ def init_auth_routes(app):
                 session.clear()
                 login_user(usr, fresh=True)
                 if usr.role == 0:
-                    return redirect(url_for("admin_dashboard"))
+                    return redirect(url_for("admin_dashboard", cb=int(time.time())))
                 elif usr.role == 1:
-                    return redirect(url_for("user_dashboard")) 
+                    return redirect(url_for("user_dashboard", cb=int(time.time()))) 
             else:
                 flash("Incorrect password. Please try again.", "danger")
                 return render_template("login.html")
