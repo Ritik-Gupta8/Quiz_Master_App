@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quiz-master-cache-v4'; // 🔥 bump version
+const CACHE_NAME = 'quiz-master-cache-v5'; // 🔥 bump version
 const OFFLINE_URL = '/static/offline.html';
 
 // Only cache STATIC assets (never HTML pages)
@@ -55,8 +55,8 @@ self.addEventListener('fetch', event => {
   }
 
   // 🚫 DO NOT INTERCEPT homepage (can be user-specific)
-  if (event.request.mode === 'navigate' && url.pathname === '/') {
-    return;
+  if (event.request.mode === 'navigate') {
+    return; // ❌ DO NOT TOUCH ANY HTML NAVIGATION EVER
   }
 
   // ✅ Navigation fallback ONLY for public pages

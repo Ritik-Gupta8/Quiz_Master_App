@@ -5,9 +5,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models.models import db, User
 
 def init_auth_routes(app):
-    @app.route("/") 
-    def home():
-        return render_template("index.html")
+    if current_user.is_authenticated:
+        if current_user.role == 0:
+            return redirect(url_for("admin_dashboard"))
+        return redirect(url_for("user_dashboard"))
+    return render_template("index.html")
 
     @app.route("/about")
     def about():

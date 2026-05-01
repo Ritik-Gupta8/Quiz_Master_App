@@ -26,7 +26,7 @@ def setup_app():
 
     # 🔥 COOKIE CONFIG (fixed)
     app.config.update(
-        SESSION_COOKIE_SECURE=False,   # ⚠️ IMPORTANT FIX
+        SESSION_COOKIE_SECURE=True,   # ⚠️ IMPORTANT FIX
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE='Lax',
         SESSION_COOKIE_DOMAIN=None,
@@ -65,7 +65,8 @@ def setup_app():
     def add_cache_headers(response):
         if request.path.startswith('/static') or request.path in ['/sw.js', '/manifest.json']:
             return response
-
+        if request.path == "/":
+           response.headers['Cache-Control'] = 'no-store'
         response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
