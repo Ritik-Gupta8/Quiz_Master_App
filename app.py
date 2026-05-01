@@ -2,7 +2,6 @@ from flask import Flask, send_from_directory
 from flask_compress import Compress
 from models.models import db, User
 from flask_login import LoginManager
-from flask_session import Session
 from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
 import os
@@ -16,7 +15,20 @@ def setup_app():
     global app
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "quiz-master-dev-secret-key-change-in-prod")
+    
+    # Secure SECRET_KEY: Must be set in environment variables
+    secret = os.environ.get("SECRET_KEY")
+    if not secret:
+        print("CRITICAL WARNING: SECRET_KEY is not set in the environment!")
+    app.config["SECRET_KEY"] = secret or os.urandom(24)
+    
+    # Cookie Security
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Lax',
+    )
+    
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Performance: Cache static files for 1 year in browser
@@ -38,11 +50,8 @@ def setup_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
         
-    # Configure Flask-Session — store sessions in database (persistent across Render restarts)
-    app.config["SESSION_TYPE"] = "sqlalchemy"
-    app.config["SESSION_SQLALCHEMY"] = db
-    app.config["SESSION_PERMANENT"] = False
-    Session(app)
+        
+    # Removed Flask-Session config as requested, defaulting to Flask's built-in secure client-side sessions
     
     @app.after_request
     def add_cache_headers(response):
