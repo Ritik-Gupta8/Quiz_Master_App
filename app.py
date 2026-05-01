@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, request
+from flask import Flask, send_from_directory, request, session
 from flask_compress import Compress
 from models.models import db, User
 from flask_login import LoginManager
@@ -6,6 +6,8 @@ from werkzeug.security import generate_password_hash
 from flask_migrate import Migrate
 import os
 from dotenv import load_dotenv
+import uuid
+from datetime import timedelta
 
 load_dotenv()
 
@@ -15,70 +17,75 @@ def setup_app():
     global app
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-    
-    # Secure SECRET_KEY: Must be set in environment variables
+
+    # 🔐 SECRET KEY (must be set)
     secret = os.environ.get("SECRET_KEY")
     if not secret:
-        print("CRITICAL WARNING: SECRET_KEY is not set in the environment!")
-    app.config["SECRET_KEY"] = secret or os.urandom(24)
-    
-    # Cookie Security
+        raise RuntimeError("SECRET_KEY must be set in environment variables")
+    app.config["SECRET_KEY"] = secret
+
+    # 🔥 COOKIE CONFIG (fixed)
     app.config.update(
-        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_SECURE=False,   # ⚠️ IMPORTANT FIX
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE='Lax',
+        SESSION_COOKIE_DOMAIN=None,
     )
-    
+
+    # 🔥 SESSION CONTROL
+    app.config["SESSION_REFRESH_EACH_REQUEST"] = True
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=3)
+
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # Performance: Cache static files for 1 year in browser
+    # ⚡ Performance
     app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 31536000
-
-    # Performance: Enable Gzip/Brotli compression on all responses
     Compress(app)
+
     db.init_app(app)
-    
-    # Initialize Flask-Migrate
     migrate = Migrate(app, db)
-    
-    # Configure Flask-Login
+
+    # 🔐 Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = "signin"
-    
+
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-        
-        
-    # Removed Flask-Session config as requested, defaulting to Flask's built-in secure client-side sessions
-    
+
+    # 🔥 CRITICAL FIX — UNIQUE SESSION PER DEVICE
+    @app.before_request
+    def ensure_unique_session():
+        if 'session_uuid' not in session:
+            session['session_uuid'] = str(uuid.uuid4())
+
+    # 🔥 NO-CACHE FOR DYNAMIC ROUTES
     @app.after_request
     def add_cache_headers(response):
-        # Forcefully prevent caching for all dynamic responses
-        # Bypass for static files so they can be cached normally
         if request.path.startswith('/static') or request.path in ['/sw.js', '/manifest.json']:
             return response
-            
+
         response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
+        response.headers['Vary'] = 'Cookie'  # 🔥 VERY IMPORTANT
         return response
-    
+
     app.app_context().push()
-    
-    # Create an admin user if tables exist
+
+    # Create admin if not exists
     try:
         create_admin()
-    except Exception as e:
-        print("⚠️ Skipping admin creation (Database tables might not be migrated yet).")
+    except Exception:
+        print("⚠️ Skipping admin creation (DB not ready)")
 
 def create_admin():
     admin_email = os.environ.get("ADMIN_EMAIL")
     admin_password = os.environ.get("ADMIN_PASSWORD")
+
     if admin_email and admin_password:
         if not User.query.filter_by(email=admin_email).first():
-            # Using the same hashing method as in controllers.py
             hashed_pw = generate_password_hash(admin_password, method='pbkdf2:sha256')
             admin = User(
                 email=admin_email,
@@ -88,10 +95,11 @@ def create_admin():
             )
             db.session.add(admin)
             db.session.commit()
-            print("✅ Admin user created successfully.")
+            print("✅ Admin user created")
 
 setup_app()
 
+# Routes
 from routes.auth_routes import init_auth_routes
 from routes.admin_routes import init_admin_routes
 from routes.user_routes import init_user_routes
@@ -99,7 +107,6 @@ from routes.quiz_routes import init_quiz_routes
 from routes.analytics_routes import init_analytics_routes
 from routes.api_routes import init_api_routes
 
-# Initialize all route modules cleanly
 init_auth_routes(app)
 init_admin_routes(app)
 init_user_routes(app)
@@ -115,7 +122,6 @@ def serve_sw():
 def serve_manifest():
     return send_from_directory('static', 'manifest.json', mimetype='application/json')
 
-# AI Generation system is now configured and ready for local use
 if __name__ == "__main__":
     debug_mode = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
     app.run(debug=debug_mode)
