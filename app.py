@@ -55,11 +55,14 @@ def setup_app():
     
     @app.after_request
     def add_cache_headers(response):
-        # Prevent caching for all dynamic responses to avoid cross-user session leaks
-        if 'Cache-Control' not in response.headers:
-            response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-            response.headers['Pragma'] = 'no-cache'
-            response.headers['Expires'] = '0'
+        # Forcefully prevent caching for all dynamic responses
+        # Bypass for static files so they can be cached normally
+        if request.path.startswith('/static') or request.path in ['/sw.js', '/manifest.json']:
+            return response
+            
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
         return response
     
     app.app_context().push()
