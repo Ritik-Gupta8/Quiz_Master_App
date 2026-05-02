@@ -10,7 +10,8 @@
     <meta name="theme-color" content="#4f46e5">
     <link rel="apple-touch-icon" href="/static/images/logo-192.png">
     <title>User Home | Quiz Master</title>
-    <meta name="description" content="Your personal Quiz Master dashboard. Track progress, attempt AI-generated quizzes, view scores, and climb the leaderboard.">
+    <meta name="description"
+        content="Your personal Quiz Master dashboard. Track progress, attempt AI-generated quizzes, view scores, and climb the leaderboard.">
     <meta name="robots" content="noindex, nofollow">
     <style>
         body {
@@ -205,15 +206,7 @@
         <p class="mt-2 text-slate-500 font-medium italic text-center">This can take up to 5-10 seconds, please stay on
             this page.</p>
     </div>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => console.log('SW registered'))
-                    .catch(err => console.log('SW registration failed: ', err));
-            });
-        }
-    </script>
+
 </body>
 
 </html>

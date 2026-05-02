@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quiz-master-cache-v5'; // 🔥 bump version
+const CACHE_NAME = 'quiz-master-cache-v7'; // 🔥 bump version
 const OFFLINE_URL = '/static/offline.html';
 
 // Only cache STATIC assets (never HTML pages)
@@ -45,32 +45,15 @@ self.addEventListener('activate', event => {
 
 // FETCH (🔥 critical logic)
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+  const req = event.request;
 
-  // 🚫 DO NOT INTERCEPT protected routes
-  if (
-    PROTECTED_ROUTES.some(route => url.pathname.startsWith(route))
-  ) {
-    return;
+  // ❌ NEVER cache HTML pages
+  if (req.mode === 'navigate') {
+    return;  // 🔥 critical fix
   }
 
-  // 🚫 DO NOT INTERCEPT homepage (can be user-specific)
-  if (event.request.mode === 'navigate') {
-    return; // ❌ DO NOT TOUCH ANY HTML NAVIGATION EVER
-  }
-
-  // ✅ Navigation fallback ONLY for public pages
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(OFFLINE_URL))
-    );
-    return;
-  }
-
-  // ✅ Static asset caching (safe)
+  // ✅ Only cache static assets
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    caches.match(req).then(res => res || fetch(req))
   );
 });

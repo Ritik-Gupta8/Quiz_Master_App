@@ -1,5 +1,5 @@
 from flask import render_template, request, url_for, redirect, flash
-from flask_login import current_user
+from flask_login import current_user, login_required
 from datetime import datetime, date
 import os
 from models.models import db, Subject, Quiz, User, Question, QuizAttempt, UserQuota
@@ -10,6 +10,7 @@ DEFAULT_SUBJECTS = ["Physics", "Mathematics", "General Knowledge", "Chemistry", 
 
 def init_admin_routes(app):
     @app.route("/admin")
+    @login_required
     @role_required("admin")
     def admin_dashboard():
         subjects = Subject.query.all()

@@ -1,5 +1,5 @@
 from flask import render_template, request, url_for, redirect, flash
-from flask_login import current_user
+from flask_login import current_user, login_required
 from datetime import datetime, date
 from models.models import db, Subject, Quiz, User, Question, QuizAttempt, Score, UserQuota
 from routes.utils import role_required
@@ -11,6 +11,7 @@ MAX_QUIZ_ATTEMPTS = 3
 
 def init_user_routes(app):
     @app.route("/user")
+    @login_required
     @role_required("user")
     def user_dashboard():
         dt_time_now = date.today()
