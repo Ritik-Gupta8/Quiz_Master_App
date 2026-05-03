@@ -208,7 +208,10 @@ This project utilizes modern Tailwind CSS without relying on CDNs to ensure zero
 | `npm run watch:css` | Watches `html`/`js`/`py` files for class changes | Active UI development |
 | `npm run prod:css` | Generates a minified `main.css` | **Run before deploying to production** |
 
+
+
 ---
+
 
 ## 📄 License
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
