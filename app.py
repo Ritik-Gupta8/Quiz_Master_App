@@ -95,13 +95,7 @@ init_quiz_routes(app)
 init_analytics_routes(app)
 init_api_routes(app)
 
-@app.route('/sw.js')
-def serve_sw():
-    return send_from_directory('static', 'sw.js', mimetype='application/javascript')
 
-@app.route('/manifest.json')
-def serve_manifest():
-    return send_from_directory('static', 'manifest.json', mimetype='application/json')
 
 # AI Generation system is now configured and ready for local use
 if __name__ == "__main__":
