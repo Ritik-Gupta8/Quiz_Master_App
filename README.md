@@ -1,6 +1,6 @@
 # 🧠 Quiz Master — AI-Powered Quiz Platform
 
-> A full-stack Progressive Web App (PWA) built with Flask, PostgreSQL, Tailwind CSS, and Google Gemini AI. Students can take AI-generated quizzes, track their progress, and compete on dynamic leaderboards.
+> A full-stack web application built with Flask, PostgreSQL, Tailwind CSS, and Google Gemini AI. Students can take AI-generated quizzes, track their progress, and compete on dynamic leaderboards.
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0.3-black?logo=flask)](https://flask.palletsprojects.com/)
@@ -39,7 +39,7 @@
 | **Database** | PostgreSQL (hosted on Supabase), Flask-SQLAlchemy, Flask-Migrate |
 | **AI Integration** | Google Gemini 1.5 Flash (`google-generativeai`) |
 | **Frontend** | Tailwind CSS v3 (Node/CLI built), Chart.js, Vanilla JS |
-| **PWA & Performance** | Service Worker, Manifest, Flask-Compress (Gzip/Brotli), persistent SQL-backed sessions |
+| **Performance** | Flask-Compress (Gzip/Brotli), persistent SQL-backed sessions |
 
 ---
 
@@ -76,9 +76,7 @@ Quiz_Master_App/
     ├── styles/
     │   ├── tailwind_input.css # Tailwind source file
     │   └── main.css           # Compiled output file
-    ├── sw.js                  # Service Worker (PWA caching)
-    ├── manifest.json          # PWA Manifest
-    └── offline.html           # Offline fallback page
+
 ```
 
 ---
