@@ -6,9 +6,8 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles/main.css">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4f46e5">
-    <link rel="apple-touch-icon" href="/static/images/logo-192.png">
+    
+
     <title>{% block title %}{% endblock %} | Quiz Master</title>
     <style>
         body { font-family: 'Outfit', sans-serif; }
@@ -56,12 +55,6 @@
             </div>
         </div>
     </footer>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js');
-            });
-        }
-    </script>
+    
 </body>
 </html>
