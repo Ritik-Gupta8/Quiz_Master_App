@@ -7,9 +7,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4f46e5">
-    <link rel="apple-touch-icon" href="/static/images/logo-192.png">
+    
+
     <title>Register | Quiz Master</title>
     <meta name="description" content="Create your free Quiz Master account and start taking AI-powered quizzes, tracking your scores, and competing on the leaderboard.">
     <style>
@@ -126,15 +125,7 @@
             </div>
         </div>
     </footer>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => console.log('SW registered'))
-                    .catch(err => console.log('SW registration failed: ', err));
-            });
-        }
-    </script>
+
 </body>
 
 </html>
