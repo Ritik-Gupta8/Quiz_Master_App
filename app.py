@@ -44,13 +44,22 @@ def setup_app():
     app.config["SESSION_PERMANENT"] = False
     Session(app)
     
+    @app.before_request
+    def log_session_info():
+        # Verification logging for session debugging
+        from flask import session
+        from flask_login import current_user
+        user_name = current_user.full_name if current_user.is_authenticated else "Guest"
+        print(f"--- [SESSION LOG] User: {user_name} | SessionID: {session.get('_id', 'No ID')} | Request: {request.path} ---")
+
     @app.after_request
     def add_cache_headers(response):
-        # Prevent caching for all dynamic responses to avoid cross-user session leaks
-        if 'Cache-Control' not in response.headers:
-            response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-            response.headers['Pragma'] = 'no-cache'
-            response.headers['Expires'] = '0'
+        # FORCE strict security headers for all dynamic responses to prevent cross-user leakage
+        # We removed the 'if' check to ensure these are ALWAYS applied, overriding any defaults.
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0, private'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        response.headers['Vary'] = 'Cookie'  # Ensure proxies vary content based on session cookie
         return response
     
     app.app_context().push()
