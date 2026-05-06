@@ -53,6 +53,7 @@ def init_auth_routes(app):
                 # Clear session to prevent cross-user session leakage or fixation
                 session.clear()
                 login_user(usr)
+                print(f"--- [LOGIN SUCCESS] User: {usr.full_name} | Email: {usr.email} | New Session: {session.get('_id', 'Pending')} ---")
                 if usr.role == 0:
                     return redirect(url_for("admin_dashboard"))
                 elif usr.role == 1:
