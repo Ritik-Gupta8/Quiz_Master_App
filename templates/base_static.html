@@ -56,5 +56,23 @@
         </div>
     </footer>
     
+    <script>
+        // --- Service Worker Self-Destruct ---
+        // Since PWA features were removed, this ensures old workers are killed on users' browsers.
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                    console.log('Old Service Worker unregistered successfully.');
+                }
+            });
+        }
+        // Clear old caches if any
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) caches.delete(name);
+            });
+        }
+    </script>
 </body>
 </html>
