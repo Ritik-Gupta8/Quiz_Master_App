@@ -47,7 +47,7 @@ def setup_app():
     @app.before_request
     def log_session_info():
         # Verification logging for session debugging
-        from flask import session
+        from flask import session, request
         from flask_login import current_user
         user_name = current_user.full_name if current_user.is_authenticated else "Guest"
         print(f"--- [SESSION LOG] User: {user_name} | SessionID: {session.get('_id', 'No ID')} | Request: {request.path} ---")
