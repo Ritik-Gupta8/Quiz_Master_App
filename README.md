@@ -2,7 +2,7 @@
 
 > A full-stack web application built with Flask, PostgreSQL, Tailwind CSS, and Google Gemini AI. Students can take AI-generated quizzes, track their progress, and compete on dynamic leaderboards.
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0.3-black?logo=flask)](https://flask.palletsprojects.com/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-4169e1?logo=postgresql)](https://supabase.com/)
@@ -18,7 +18,7 @@
 - **Dynamic Difficulty:** 
   - **Easy:** 5 questions, 5-minute timer
   - **Medium:** 10 questions, 10-minute timer
-  - **Hard:** 15 questions, 15-minute timer
+  - **High:** 15 questions, 15-minute timer
 - **3-Attempt Rule:** Attempt a quiz up to 3 times. The highest score is recorded. After 3 attempts, a "Review" mode is unlocked to see correct answers.
 - **XP & Leaderboard:** Earn XP based on your score multiplied by difficulty (Easy 1x, Medium 1.2x, Hard 1.5x). Compete on subject-specific leaderboards.
 - **Real-Time Saving:** Answers are saved instantly via AJAX so no progress is lost if the page is refreshed.
@@ -26,8 +26,13 @@
 
 ### 🛠️ For Administrators
 - **Global Dashboard:** View total quizzes, active users, average platform scores, and subject-wise metrics.
-- **Subject & Quiz Management:** Full CRUD operations over Subjects and Quizzes. (Note: Quizzes are linked directly to Subjects).
-- **User Management:** Monitor user activity, search by name/qualification, and securely delete users via cascading database constraints.
+- **Subject & Quiz Management:** Full CRUD operations over Subjects and Quizzes.
+- **User Management:** Monitor user activity, search by name/qualification, and securely manage user data.
+
+### 🔒 Security & Reliability
+- **Anti-Proxy Leakage:** Implemented aggressive cache-control (`Surrogate-Control: no-store`) to prevent cross-user session leakage on CDNs like Cloudflare.
+- **Secure Sessions:** SQL-backed sessions with unique cookie names and strict security flags (HttpOnly, SameSite=Lax).
+- **Session Regeneration:** Secure session handling to prevent session fixation attacks.
 
 ---
 
@@ -35,11 +40,11 @@
 
 | Layer | Technology |
 |-------|-----------|
-| **Backend** | Python 3.11+, Flask 3.0.3 |
+| **Backend** | Python 3.13, Flask 3.0.3 |
 | **Database** | PostgreSQL (hosted on Supabase), Flask-SQLAlchemy, Flask-Migrate |
 | **AI Integration** | Google Gemini 1.5 Flash (`google-generativeai`) |
 | **Frontend** | Tailwind CSS v3 (Node/CLI built), Chart.js, Vanilla JS |
-| **Performance** | Flask-Compress (Gzip/Brotli), persistent SQL-backed sessions |
+| **Performance** | Flask-Compress (Gzip/Brotli), SQL-backed sessions (Flask-Session) |
 
 ---
 
@@ -107,7 +112,7 @@ Subject ────────────────────────
 ## ⚙️ Local Development Setup
 
 ### 1. Prerequisites
-- **Python 3.11+**
+- **Python 3.13**
 - **Node.js 18+** (Required for compiling Tailwind CSS)
 - **PostgreSQL Database** (We recommend creating a free project on Supabase)
 
