@@ -15,6 +15,18 @@ app = None
 def setup_app():
     global app
     app = Flask(__name__)
+
+    @app.after_request
+    def add_cache_headers(response):
+        # FORCE strict security headers for all dynamic responses to prevent cross-user leakage
+        # Surrogate-Control is specifically for CDNs/Proxies (like Cloudflare/Render)
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0, private'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        response.headers['Surrogate-Control'] = 'no-store'
+        response.headers['Vary'] = 'Cookie, Authorization'
+        return response
+
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "quiz-master-dev-secret-key-change-in-prod")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -22,8 +34,8 @@ def setup_app():
     # Performance: Cache static files for 1 year in browser
     app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 31536000
 
-    # Performance: Enable Gzip/Brotli compression on all responses
-    Compress(app)
+    # Performance: Enable Gzip/Brotli compression on all responses (moved to bottom)
+    # Compress(app)
     db.init_app(app)
     
     # Initialize Flask-Migrate
@@ -43,11 +55,12 @@ def setup_app():
     app.config["SESSION_SQLALCHEMY"] = db
     app.config["SESSION_PERMANENT"] = False
 
-    # Security: Proper session cookie settings (these MUST be in app.config, not just env vars)
-    app.config["SESSION_COOKIE_SECURE"] = os.environ.get("FLASK_ENV") == "production"  # HTTPS only in prod
-    app.config["SESSION_COOKIE_HTTPONLY"] = True  # Prevent JavaScript access to session cookie
-    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Prevent CSRF via cross-site requests
-    app.config["SESSION_COOKIE_NAME"] = "session"  # Explicit cookie name
+    # Security: Proper session cookie settings
+    app.config["SESSION_COOKIE_SECURE"] = os.environ.get("FLASK_ENV") == "production"
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["SESSION_COOKIE_NAME"] = "quiz_master_session"  # Unique name to avoid collisions
+    app.config["SESSION_REFRESH_EACH_REQUEST"] = False        # Avoid redundant Set-Cookie headers
     Session(app)
     
     @app.before_request
@@ -59,17 +72,8 @@ def setup_app():
         sid = getattr(session, 'sid', 'No SID')
         print(f"--- [SESSION LOG] User: {user_name} | SessionSID: {sid} | Request: {request.path} ---")
 
-    @app.after_request
-    def add_cache_headers(response):
-        # FORCE strict security headers for all dynamic responses to prevent cross-user leakage
-        # We removed the 'if' check to ensure these are ALWAYS applied, overriding any defaults.
-        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0, private'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
-        response.headers['Vary'] = 'Cookie'  # Ensure proxies vary content based on session cookie
-        return response
-    
-    app.app_context().push()
+    # Move add_cache_headers registration to the very end of setup_app 
+    # to ensure it runs last in the after_request chain.
     
     # Create an admin user if tables exist
     try:
@@ -110,6 +114,9 @@ init_user_routes(app)
 init_quiz_routes(app)
 init_analytics_routes(app)
 init_api_routes(app)
+
+# Performance: Enable compression last so it doesn't interfere with our headers
+Compress(app)
 
 
 
