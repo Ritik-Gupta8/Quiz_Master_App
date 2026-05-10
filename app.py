@@ -42,6 +42,12 @@ def setup_app():
     app.config["SESSION_TYPE"] = "sqlalchemy"
     app.config["SESSION_SQLALCHEMY"] = db
     app.config["SESSION_PERMANENT"] = False
+
+    # Security: Proper session cookie settings (these MUST be in app.config, not just env vars)
+    app.config["SESSION_COOKIE_SECURE"] = os.environ.get("FLASK_ENV") == "production"  # HTTPS only in prod
+    app.config["SESSION_COOKIE_HTTPONLY"] = True  # Prevent JavaScript access to session cookie
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Prevent CSRF via cross-site requests
+    app.config["SESSION_COOKIE_NAME"] = "session"  # Explicit cookie name
     Session(app)
     
     @app.before_request
@@ -50,7 +56,8 @@ def setup_app():
         from flask import session, request
         from flask_login import current_user
         user_name = current_user.full_name if current_user.is_authenticated else "Guest"
-        print(f"--- [SESSION LOG] User: {user_name} | SessionID: {session.get('_id', 'No ID')} | Request: {request.path} ---")
+        sid = getattr(session, 'sid', 'No SID')
+        print(f"--- [SESSION LOG] User: {user_name} | SessionSID: {sid} | Request: {request.path} ---")
 
     @app.after_request
     def add_cache_headers(response):
