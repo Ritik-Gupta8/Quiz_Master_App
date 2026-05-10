@@ -50,10 +50,14 @@ def init_auth_routes(app):
                 return render_template("login.html")
                 
             if check_password_hash(usr.password, pwd):
-                # Clear session to prevent cross-user session leakage or fixation
+                # CRITICAL FIX: session.clear() only clears data but keeps the same session ID (sid).
+                # This caused cross-user session leakage — user2 would overwrite user1's session.
+                # We must REGENERATE the session ID so each login gets a unique sid.
                 session.clear()
+                # Generate a brand new session ID to prevent session fixation
+                app.session_interface.regenerate(session)
                 login_user(usr)
-                print(f"--- [LOGIN SUCCESS] User: {usr.full_name} | Email: {usr.email} | New Session: {session.get('_id', 'Pending')} ---")
+                print(f"--- [LOGIN SUCCESS] User: {usr.full_name} | Email: {usr.email} | New Session SID: {session.sid} ---")
                 if usr.role == 0:
                     return redirect(url_for("admin_dashboard"))
                 elif usr.role == 1:
